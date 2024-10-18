@@ -1,30 +1,30 @@
 import time
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 from dicodile import dicodile
 from dicodile.update_d.update_d import tukey_window
 from dicodile.utils.dictionary import init_dictionary
 
 
-def load_data():
+def load_data(experiment: str, frame: int):
 
-    data_dir_path = Path.home() / "data/pattern_detection_tokam"
+    data_dir_path = Path.home() / "data"
+    input_dir_path = data_dir_path / "pattern_detection_tokam/input" / experiment
+    file_path = input_dir_path / f"frame_{frame}.txt"
 
-    input_dir_path = data_dir_path / "input"
-    file_path_list = sorted(input_dir_path.glob("*"))
-    image_array = plt.imread(file_path_list[0])
-    learnable_image = image_array[:, :, :-1].transpose([2, 0, 1])
+    image_array = np.loadtxt(file_path)
+    image_array -= image_array.mean()
 
-    channel_per_channel_mean = np.reshape(np.mean(learnable_image, (1, 2)), (-1, 1, 1))
-
-    return learnable_image - channel_per_channel_mean
+    return np.expand_dims(image_array, axis=0)
 
 
-def save_results(D_hat, z_hat, time_str):
-    data_dir_path = Path.home() / "data/pattern_detection_tokam"
-    output_dir_path = data_dir_path / "learned_dictionaries/first_image"
+def save_results(D_hat, z_hat, experiment, frame, time_str):
+    data_dir_path = Path.home() / "data"
+    pattern_detection_path = data_dir_path / "pattern_detection_tokam"
+    output_dir_path = (
+        pattern_detection_path / "learned_dictionaries" / experiment / frame
+    )
 
     output_dir_path.mkdir(parents=True, exist_ok=True)
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     w_world = "auto"  # number of jobs per row
     tol = 1e-3  # tolerance for minimal update size
 
-    learnable_image = load_data()
+    learnable_image = load_data("interchange_nodriftwave", frame=1000)
 
     D_init = init_dictionary(
         learnable_image, n_atoms=n_atoms, atom_support=atom_support, random_state=60
