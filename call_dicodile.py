@@ -5,6 +5,7 @@ import numpy as np
 from dicodile import dicodile
 from dicodile.update_d.update_d import tukey_window
 from dicodile.utils.dictionary import init_dictionary
+from mpi4py import MPI
 
 
 def load_data(experiment: str, frame: int):
@@ -23,7 +24,7 @@ def save_results(D_hat, z_hat, experiment, frame, time_str):
     data_dir_path = Path.home() / "data"
     pattern_detection_path = data_dir_path / "pattern_detection_tokam"
     output_dir_path = (
-        pattern_detection_path / "learned_dictionaries" / experiment / frame
+        pattern_detection_path / "learned_dictionaries" / f"{experiment}_frame_{frame}"
     )
 
     output_dir_path.mkdir(parents=True, exist_ok=True)
@@ -50,7 +51,10 @@ if __name__ == "__main__":
     w_world = "auto"  # number of jobs per row
     tol = 1e-3  # tolerance for minimal update size
 
-    learnable_image = load_data("interchange_nodriftwave", frame=1000)
+    experiment = "interchange_nodriftwave"
+    frame = 1000
+
+    learnable_image = load_data(experiment, frame)
 
     D_init = init_dictionary(
         learnable_image, n_atoms=n_atoms, atom_support=atom_support, random_state=60
@@ -76,4 +80,7 @@ if __name__ == "__main__":
 
     print("[DICOD] final cost : {}".format(pobj))
 
-    save_results(D_hat=D_hat, z_hat=z_hat, time_str=time_str)
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    if rank == 0:
+        save_results(D_hat, z_hat, experiment, frame, time_str)

@@ -4,7 +4,7 @@ import numpy as np
 
 
 def load_dict_and_activations(
-    experiment: str, frame: int, mode_or_timestamp: str = "latest"
+    experiment: str, frame: int, mode_or_timestamp: str = "latest", verbose: int = 0
 ):
 
     data_path = Path.home() / "data"
@@ -23,6 +23,10 @@ def load_dict_and_activations(
         time_str = time_str_list[-1]
     else:
         time_str = mode_or_timestamp
+
+    if verbose >= 1:
+        print(f"Loaded from: {dict_path}")
+        print(f"Timestamp: {time_str}")
 
     D_hat = np.load(dict_path / f"D_hat_{time_str}.npy")
     z_hat = np.load(dict_path / f"z_hat_{time_str}.npy")
