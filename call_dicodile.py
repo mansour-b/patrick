@@ -5,7 +5,6 @@ import numpy as np
 from dicodile import dicodile
 from dicodile.update_d.update_d import tukey_window
 from dicodile.utils.dictionary import init_dictionary
-from mpi4py import MPI
 
 
 def load_data(experiment: str, frame: int):
@@ -15,7 +14,7 @@ def load_data(experiment: str, frame: int):
     file_path = input_dir_path / f"frame_{frame}.txt"
 
     image_array = np.loadtxt(file_path)
-    image_array -= image_array.mean()
+    image_array *= image_array >= image_array.mean()
 
     return np.expand_dims(image_array, axis=0)
 
@@ -41,7 +40,7 @@ if __name__ == "__main__":
     time_str = time.strftime("%y%m%d_%H%M%S")
 
     n_atoms = 10
-    atom_support = (50, 50)
+    atom_support = (10, 10)
 
     reg = 0.2  # regularization parameter
     n_iter = 100  # maximum number of iterations
@@ -80,7 +79,4 @@ if __name__ == "__main__":
 
     print("[DICOD] final cost : {}".format(pobj))
 
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    if rank == 0:
-        save_results(D_hat, z_hat, experiment, frame, time_str)
+    save_results(D_hat, z_hat, experiment, frame, time_str)
