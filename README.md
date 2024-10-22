@@ -1,1 +1,2 @@
-# pattern-detection-tokam
+# PATteRn dIsCovey for toKam2d (PATRICK)
+

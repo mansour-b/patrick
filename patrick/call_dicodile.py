@@ -5,7 +5,7 @@ from dicodile import dicodile
 from dicodile.update_d.update_d import tukey_window
 from dicodile.utils.dictionary import init_dictionary
 
-from pattern_detection_tokam.load_and_save import load_data, save_results
+from patrick.load_and_save import load_data, save_results
 
 
 def make_parser():

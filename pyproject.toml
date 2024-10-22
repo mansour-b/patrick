@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pattern-detection-tokam"
+name = "patrick"
 version = "0.1.0"
 dependencies = [
 ]
@@ -11,7 +11,7 @@ requires-python = ">=3.8"
 authors = [
   {name = "Mansour Benbakoura", email = "mansour.benbakoura@inria.fr"}
 ]
-description = "Pattern detection on TOKAM2D movies"
+description = "Pattern discovery on TOKAM2D movies"
 readme = "README.md"
 classifiers = [
   "Development Status :: 4 - Beta",
