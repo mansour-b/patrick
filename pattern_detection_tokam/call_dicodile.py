@@ -1,7 +1,5 @@
 import time
-from pathlib import Path
 
-import numpy as np
 from dicodile import dicodile
 from dicodile.update_d.update_d import tukey_window
 from dicodile.utils.dictionary import init_dictionary
@@ -25,8 +23,9 @@ if __name__ == "__main__":
 
     experiment = "interchange_nodriftwave"
     frame = 1000
+    offset_type = "none"
 
-    learnable_image = load_data(experiment, frame)
+    learnable_image = load_data(experiment, frame, offset_type)
 
     D_init = init_dictionary(
         learnable_image, n_atoms=n_atoms, atom_support=atom_support, random_state=60
@@ -49,7 +48,4 @@ if __name__ == "__main__":
         tol=tol,
         verbose=1,
     )
-
-    print("[DICOD] final cost : {}".format(pobj))
-
     save_results(D_hat, z_hat, experiment, frame, time_str)

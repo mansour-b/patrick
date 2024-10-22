@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 
 
-def load_data(experiment: str, frame: int):
+def load_data(experiment: str, frame: int, offset_type: str):
 
     data_dir_path = Path.home() / "data"
     input_dir_path = data_dir_path / "pattern_detection_tokam/input" / experiment
@@ -13,8 +13,13 @@ def load_data(experiment: str, frame: int):
 
     counts, values = np.histogram(image_array, bins=100)
     mode = values[np.argmax(counts)]
-
-    image_array -= mode
+    offset_dict = {
+        "mean": image_array.mean(),
+        "median": np.median(image_array),
+        "mode": mode,
+        "none": 0.0,
+    }
+    image_array -= offset_dict[offset_type]
 
     return np.expand_dims(image_array, axis=0)
 
