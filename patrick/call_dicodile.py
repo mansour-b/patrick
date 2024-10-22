@@ -11,10 +11,10 @@ from patrick.load_and_save import load_data, save_results
 def make_parser():
     parser = ArgumentParser()
 
-    parser.add_argument("--n_atoms", help="number of atoms")
-    parser.add_argument("--atom_support", help="size of the atoms")
-    parser.add_argument("--reg", help="regularization parameter")
-    parser.add_argument("--tol", help="tolerance for minimal update size")
+    parser.add_argument("--n_atoms", type=int, help="number of atoms")
+    parser.add_argument("--atom_size", type=int, help="size of the atoms (int)")
+    parser.add_argument("--reg", type=float, help="regularization parameter")
+    parser.add_argument("--tol", type=float, help="tolerance for minimal update size")
     parser.add_argument(
         "--offset_type",
         choices=["mean", "median", "mode", "none"],
@@ -24,26 +24,31 @@ def make_parser():
     parser.add_argument(
         "--n_iter",
         default=100,
+        type=int,
         help="maximum number of iterations",
     )
     parser.add_argument(
         "--window",
         default=True,
+        type=bool,
         help="when True, makes sure that the borders of the atoms are 0",
     )
     parser.add_argument(
         "--z_positive",
         default=True,
+        type=bool,
         help="when True, requires all activations Z to be positive",
     )
     parser.add_argument(
         "--n_workers",
         default=10,
+        type=int,
         help="number of workers to be used for computations",
     )
     parser.add_argument(
         "--w_world",
         default=10,
+        type=int,
         help="number of jobs per row",
     )
 
@@ -55,7 +60,7 @@ if __name__ == "__main__":
     parser = make_parser()
     args = parser.parse_args()
 
-    atom_support = tuple(args.atom_support)
+    atom_support = (args.atom_size, args.atom_size)
 
     time_str = time.strftime("%y%m%d_%H%M%S")
     experiment = "interchange_nodriftwave"

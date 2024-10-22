@@ -1,13 +1,10 @@
 method: grid
 parameters:
-  atom_support:
+  atom_size:
     values:
-      - - 10
-        - 10
-      - - 20
-        - 20
-      - - 50
-        - 50
+      - 10
+      - 20
+      - 50
   n_atoms:
     values:
       - 10
