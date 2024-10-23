@@ -50,7 +50,7 @@ def make_parser():
     )
     parser.add_argument(
         "--w_world",
-        default=10,
+        default=5,
         type=int,
         help="number of jobs per row",
     )
@@ -83,8 +83,9 @@ if __name__ == "__main__":
     atom_support = (args.atom_size, args.atom_size)
 
     time_str = time.strftime("%y%m%d_%H%M%S")
-    with wandb.init() as run:
-        run.name = time_str
+
+    run = wandb.init()
+    run.name = time_str
 
     experiment = "interchange_nodriftwave"
     frame = 1000
