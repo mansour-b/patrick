@@ -1,9 +1,11 @@
 import time
 from argparse import ArgumentParser
 
+import numpy as np
 import wandb
 from dicodile import dicodile
 from dicodile.update_d.update_d import tukey_window
+from dicodile.utils.csc import reconstruct
 from dicodile.utils.dictionary import init_dictionary
 
 from patrick.load_and_save import load_data, save_results
@@ -56,6 +58,23 @@ def make_parser():
     return parser
 
 
+def compute_metrics(X, D_hat, z_hat):
+
+    n_atoms = z_hat.shape[0]
+    flat_activation_array = z_hat.reshape(n_atoms, -1)
+
+    l0_norm_array = np.linalg.norm(flat_activation_array, ord=0, axis=1)
+    l1_norm_array = np.linalg.norm(flat_activation_array, ord=1, axis=1)
+
+    sparsity_l0 = np.mean(l0_norm_array)
+    sparsity_l1 = np.mean(l1_norm_array)
+
+    X_hat = reconstruct(z_hat, D_hat)
+    estimation_error = np.linalg.norm(X_hat - X)
+
+    return sparsity_l0, sparsity_l1, estimation_error
+
+
 if __name__ == "__main__":
 
     parser = make_parser()
@@ -95,3 +114,16 @@ if __name__ == "__main__":
         verbose=1,
     )
     save_results(D_hat, z_hat, experiment, frame, time_str)
+
+    sparsity_l0, sparsity_l1, estimation_error = compute_metrics(
+        learnable_image, D_hat, z_hat
+    )
+
+    wandb.log(
+        {
+            "sparsity_l0": sparsity_l0,
+            "sparsity_l1": sparsity_l1,
+            "estimation_error": estimation_error,
+            "computation_time": np.sum(times),
+        }
+    )
