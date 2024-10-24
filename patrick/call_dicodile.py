@@ -75,7 +75,7 @@ def compute_metrics(X, D_hat, z_hat, sparsity_l0_threshold: float = 0.01):
     per_activation_thresholds = sparsity_l0_threshold * np.max(
         z_hat, axis=(1, 2), keepdims=True
     )
-    l0_norm_array = np.mean(z_hat > per_activation_thresholds, axis=(1, 2))
+    l0_norm_array = np.sum(z_hat > per_activation_thresholds, axis=(1, 2))
     sparsity_l0 = np.sum(l0_norm_array)
 
     flat_activation_array = z_hat.reshape(n_atoms, -1)
