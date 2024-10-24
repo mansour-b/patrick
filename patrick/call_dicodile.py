@@ -14,21 +14,36 @@ from patrick.load_and_save import load_data, log_dicodile_params, save_results
 def make_parser():
     parser = ArgumentParser()
 
-    parser.add_argument("--n_atoms", type=int, help="number of atoms")
+    parser.add_argument(
+        "--n_atoms",
+        type=int,
+        default=10,
+        help="number of atoms",
+    )
     parser.add_argument("--atom_size", type=int, help="size of the atoms (int)")
     parser.add_argument("--reg", type=float, help="regularization parameter")
-    parser.add_argument("--tol", type=float, help="tolerance for minimal update size")
+    parser.add_argument(
+        "--tol",
+        type=float,
+        default=1e-3,
+        help="tolerance for minimal update size",
+    )
     parser.add_argument(
         "--offset_type",
         choices=["mean", "median", "mode", "none"],
         help="value to be subtracted to the image before the CDL begins",
     )
-
     parser.add_argument(
         "--n_iter",
         default=100,
         type=int,
         help="maximum number of iterations",
+    )
+    parser.add_argument(
+        "--eps",
+        type="float",
+        default=1e-5,
+        help="stopping value for the alternate minimisation",
     )
     parser.add_argument(
         "--window",
@@ -124,7 +139,7 @@ if __name__ == "__main__":
     dicodile_kwargs = {
         "reg": args.reg,
         "n_iter": args.n_iter,
-        "eps": 1e-5,
+        "eps": args.eps,
         "window": args.window,
         "z_positive": args.z_positive,
         "n_workers": num_workers,
