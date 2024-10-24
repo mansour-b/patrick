@@ -68,15 +68,18 @@ def get_num_workers_per_row(atom_width: int, image_width: int, default: int) -> 
     return min(max_workers_per_row, default)
 
 
-def compute_metrics(X, D_hat, z_hat):
+def compute_metrics(X, D_hat, z_hat, sparsity_l0_threshold: float = 0.01):
 
     n_atoms = z_hat.shape[0]
-    flat_activation_array = z_hat.reshape(n_atoms, -1)
 
-    l0_norm_array = np.linalg.norm(flat_activation_array, ord=0, axis=1)
-    l1_norm_array = np.linalg.norm(flat_activation_array, ord=1, axis=1)
-
+    per_activation_thresholds = sparsity_l0_threshold * np.max(
+        z_hat, axis=(1, 2), keepdims=True
+    )
+    l0_norm_array = np.sum(z_hat > per_activation_thresholds)
     sparsity_l0 = np.mean(l0_norm_array)
+
+    flat_activation_array = z_hat.reshape(n_atoms, -1)
+    l1_norm_array = np.linalg.norm(flat_activation_array, ord=1, axis=1)
     sparsity_l1 = np.mean(l1_norm_array)
 
     X_hat = reconstruct(z_hat, D_hat)
