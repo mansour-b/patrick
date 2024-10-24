@@ -34,7 +34,7 @@ def log_dicodile_params(dicodile_kwargs: dict, experiment, frame, time_str):
 
     output_dir_path.mkdir(parents=True, exist_ok=True)
     file_path = output_dir_path / f"{time_str}.json"
-    with open(file_path) as f:
+    with open(file_path, "w") as f:
         json.dump(dicodile_kwargs, f, indent=2)
 
 
