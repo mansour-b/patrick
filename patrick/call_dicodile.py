@@ -41,7 +41,7 @@ def make_parser():
     )
     parser.add_argument(
         "--eps",
-        type="float",
+        type=float,
         default=1e-5,
         help="stopping value for the alternate minimisation",
     )
