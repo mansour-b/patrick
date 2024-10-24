@@ -59,12 +59,12 @@ def make_parser():
 
 
 def compute_max_workers_per_row(atom_width: int, image_width: int) -> int:
-    return image_width // (2 * atom_width)
+    valid_width = image_width - atom_width + 1
+    return valid_width // (2 * atom_width)
 
 
 def get_num_workers_per_row(atom_width: int, image_width: int, default: int) -> int:
     max_workers_per_row = compute_max_workers_per_row(atom_width, image_width)
-
     return min(max_workers_per_row, default)
 
 
