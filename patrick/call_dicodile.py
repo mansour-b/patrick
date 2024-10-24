@@ -8,7 +8,7 @@ from dicodile.update_d.update_d import tukey_window
 from dicodile.utils.csc import reconstruct
 from dicodile.utils.dictionary import init_dictionary
 
-from patrick.load_and_save import load_data, save_results
+from patrick.load_and_save import load_data, log_dicodile_params, save_results
 
 
 def make_parser():
@@ -49,13 +49,23 @@ def make_parser():
         help="number of workers to be used for computations",
     )
     parser.add_argument(
-        "--w_world",
-        default=5,
+        "--num_workers_per_row",
+        default=4,
         type=int,
         help="number of jobs per row",
     )
 
     return parser
+
+
+def compute_max_workers_per_row(atom_width: int, image_width: int) -> int:
+    return image_width // (2 * atom_width)
+
+
+def get_num_workers_per_row(atom_width: int, image_width: int, default: int) -> int:
+    max_workers_per_row = compute_max_workers_per_row(atom_width, image_width)
+
+    return min(max_workers_per_row, default)
 
 
 def compute_metrics(X, D_hat, z_hat):
@@ -92,6 +102,13 @@ if __name__ == "__main__":
 
     learnable_image = load_data(experiment, frame, args.offset_type)
 
+    num_workers_per_row = compute_max_workers_per_row(
+        atom_width=args.atom_size,
+        image_width=learnable_image.shape[1],
+        default=args.num_workers_per_row,
+    )
+    num_workers = num_workers_per_row**2
+
     D_init = init_dictionary(
         learnable_image,
         n_atoms=args.n_atoms,
@@ -101,19 +118,22 @@ if __name__ == "__main__":
     tw = tukey_window(atom_support)[None, None]
     D_init *= tw  # make sure that the border values are 0
 
-    D_hat, z_hat, pobj, times = dicodile(
-        learnable_image,
-        D_init,
-        reg=args.reg,
-        n_iter=args.n_iter,
-        window=args.window,
-        z_positive=args.z_positive,
-        n_workers=args.n_workers,
-        dicod_kwargs={"max_iter": 10000},
-        w_world=args.w_world,
-        tol=args.tol,
-        verbose=1,
-    )
+    dicodile_kwargs = {
+        "reg": args.reg,
+        "n_iter": args.n_iter,
+        "eps": 1e-5,
+        "window": args.window,
+        "z_positive": args.z_positive,
+        "n_workers": num_workers,
+        "w_world": num_workers_per_row,
+        "tol": args.tol,
+        "hostfile": None,
+        "dicod_kwargs": {"max_iter": 10000},
+        "verbose": 1,
+    }
+    log_dicodile_params(dicodile_kwargs, experiment, frame, time_str)
+
+    D_hat, z_hat, pobj, times = dicodile(learnable_image, D_init, **dicodile_kwargs)
     save_results(D_hat, z_hat, experiment, frame, time_str)
 
     sparsity_l0, sparsity_l1, estimation_error = compute_metrics(
