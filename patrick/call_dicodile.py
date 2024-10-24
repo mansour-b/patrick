@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     learnable_image = load_data(experiment, frame, args.offset_type)
 
-    num_workers_per_row = compute_max_workers_per_row(
+    num_workers_per_row = get_num_workers_per_row(
         atom_width=args.atom_size,
         image_width=learnable_image.shape[1],
         default=args.num_workers_per_row,
