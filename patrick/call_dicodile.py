@@ -100,7 +100,13 @@ def compute_metrics(X, D_hat, z_hat, sparsity_l0_threshold: float = 0.01):
     X_hat = reconstruct(z_hat, D_hat)
     estimation_error = np.linalg.norm(X_hat - X)
 
-    return sparsity_l0, sparsity_l1, estimation_error
+    return {
+        "sparsity_l0": sparsity_l0,
+        "sparsity_l1": sparsity_l1,
+        "estimation_error": estimation_error,
+        "sparse_error_l0": estimation_error * sparsity_l0,
+        "sparse_error_l1": estimation_error * sparsity_l1,
+    }
 
 
 if __name__ == "__main__":
@@ -154,15 +160,6 @@ if __name__ == "__main__":
     D_hat, z_hat, pobj, times = dicodile(learnable_image, D_init, **dicodile_kwargs)
     save_results(D_hat, z_hat, experiment, frame, time_str)
 
-    sparsity_l0, sparsity_l1, estimation_error = compute_metrics(
-        learnable_image, D_hat, z_hat
-    )
+    estimation_metrics = compute_metrics(learnable_image, D_hat, z_hat)
 
-    wandb.log(
-        {
-            "sparsity_l0": sparsity_l0,
-            "sparsity_l1": sparsity_l1,
-            "estimation_error": estimation_error,
-            "computation_time": np.sum(times),
-        }
-    )
+    wandb.log({**estimation_metrics, "computation_time": np.sum(times)})
