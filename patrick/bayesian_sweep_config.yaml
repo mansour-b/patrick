@@ -7,7 +7,7 @@ command:
   - ${args}
 method: bayes
 metric:
-  name: estimation_error
+  name: sparse_error_l1
   goal: minimize
 parameters:
   atom_size:
