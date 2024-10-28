@@ -121,10 +121,12 @@ if __name__ == "__main__":
     run = wandb.init()
     run.name = time_str
 
-    experiment = "interchange_nodriftwave"
-    frame = 1000
+    experiment = "movies_241018"
+    frame = 2600
 
-    learnable_image = load_data(experiment, frame, args.offset_type)
+    learnable_image = load_data(
+        experiment, frame, args.offset_type, field="turbulent_intensity"
+    )
 
     num_workers_per_row = get_num_workers_per_row(
         atom_width=args.atom_size,
