@@ -4,11 +4,15 @@ from pathlib import Path
 import numpy as np
 
 
-def load_data(experiment: str, frame: int, offset_type: str):
+def load_data(experiment: str, frame: int, offset_type: str, field: str = None):
 
     data_dir_path = Path.home() / "data"
     input_dir_path = data_dir_path / "pattern_detection_tokam/input" / experiment
-    file_path = input_dir_path / f"frame_{frame}.txt"
+
+    file_name = f"frame_{frame}.txt"
+    if field is not None:
+        file_name = "_".join([field, file_name])
+    file_path = input_dir_path / file_name
 
     image_array = np.loadtxt(file_path)
 
