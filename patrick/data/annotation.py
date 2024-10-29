@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from xml.etree.ElementTree import Element
 
 import numpy as np
@@ -7,6 +8,14 @@ from patrick.data.data_handler import DataHandler
 
 class Annotation(DataHandler):
     pass
+
+    @abstractmethod
+    def rescale(self, w_ratio: str, h_ratio: str):
+        pass
+
+    @property
+    def type(self) -> str:
+        return type(self).__name__.lower()
 
 
 class Polyline(Annotation):
@@ -28,6 +37,9 @@ class Polyline(Annotation):
         label = attrib["label"]
         point_list = parse_point_str(attrib["points"])
         return cls(label, point_list)
+
+    def rescale(self, w_ratio: float, h_ratio: float):
+        self._point_list = list(np.array((w_ratio, h_ratio)) * self._point_list)
 
 
 def annotation_factory(annotation_xml: Element) -> Annotation:

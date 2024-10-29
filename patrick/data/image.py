@@ -19,8 +19,8 @@ class Image(DataHandler):
         if annotations is None:
             annotations = []
         self._name = name
-        self._width = width
-        self._height = height
+        self._width = int(width)
+        self._height = int(height)
         self._annotations = annotations
         self._image_array = image_array
 
@@ -40,9 +40,31 @@ class Image(DataHandler):
             ],
         )
 
+    def resize(self, target_width: int, target_height: int):
+        w_ratio = target_width / self._width
+        h_ratio = target_height / self._height
+
+        self._width = target_width
+        self._height = target_height
+
+        for annotation in self._annotations:
+            annotation.rescale(w_ratio, h_ratio)
+
     def get_image_array(self, image_dir_name: str = None):
         if self._image_array is not None:
             return self._image_array
 
         file_path = PATRICK_DIR_PATH / f"input/{image_dir_name}/{self._name}.txt"
-        return np.loadtxt(file_path)
+        image_array = np.loadtxt(file_path)
+
+        array_shape = image_array.shape
+        expected_shape = (self._width, self._height)
+
+        if array_shape[::-1] != expected_shape:
+            print(
+                f"Warning: The image objects expects an array of shape "
+                f"{expected_shape}. "
+                f"The returned array has a shape {array_shape[::-1]}."
+            )
+
+        return image_array

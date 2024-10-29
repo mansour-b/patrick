@@ -20,9 +20,8 @@ def plot_image(
 
 
 def plot_annotation(ax, annotation: Annotation, color: str):
-    annotation_type_dict = {"Polyline": plot_polyline}
-    annotation_type = type(annotation).__name__
-    plot_function = annotation_type_dict[annotation_type]
+    annotation_type_dict = {"polyline": plot_polyline}
+    plot_function = annotation_type_dict[annotation.type]
     plot_function(ax, annotation, color)
 
 
