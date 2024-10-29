@@ -1,4 +1,3 @@
-import json
 from abc import ABC, abstractmethod
 from xml.etree.ElementTree import Element
 
