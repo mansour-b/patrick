@@ -2,6 +2,7 @@ from xml.etree.ElementTree import Element
 
 import numpy as np
 
+from patrick import PATRICK_DIR_PATH
 from patrick.data.annotation import Annotation, annotation_factory
 from patrick.data.data_handler import DataHandler
 
@@ -38,3 +39,10 @@ class Image(DataHandler):
                 annotation_factory(annotation_xml) for annotation_xml in data_xml
             ],
         )
+
+    def get_image_array(self, image_dir_name: str = None):
+        if self._image_array is not None:
+            return self._image_array
+
+        file_path = PATRICK_DIR_PATH / f"input/{image_dir_name}/{self._name}.txt"
+        return np.loadtxt(file_path)
