@@ -8,7 +8,7 @@ from dicodile.utils.csc import reconstruct
 from dicodile.utils.dictionary import init_dictionary
 
 from patrick.load_and_save import load_data, log_dicodile_params, save_results
-from patrick.parse import make_parser
+from patrick.parse import make_dicodile_parser
 
 
 def compute_max_workers_per_row(atom_width: int, image_width: int) -> int:
@@ -49,7 +49,7 @@ def compute_metrics(X, D_hat, z_hat, sparsity_l0_threshold: float = 0.01):
 
 if __name__ == "__main__":
 
-    parser = make_parser()
+    parser = make_dicodile_parser()
     args = parser.parse_args()
 
     atom_support = (args.atom_size, args.atom_size)

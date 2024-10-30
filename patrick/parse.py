@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 
-def make_parser():
+def make_dicodile_parser():
     parser = ArgumentParser()
 
     parser.add_argument(
