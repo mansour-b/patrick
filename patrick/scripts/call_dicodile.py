@@ -7,7 +7,7 @@ from dicodile.update_d.update_d import tukey_window
 from dicodile.utils.csc import reconstruct
 from dicodile.utils.dictionary import init_dictionary
 
-from patrick.load_and_save import load_data, log_dicodile_params, save_results
+from patrick.file_system.dicodile import load_data, log_dicodile_params, save_results
 from patrick.parse import make_dicodile_parser
 
 
