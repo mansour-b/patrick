@@ -6,7 +6,7 @@ from patrick.data.image import Image
 from patrick.data.operations import serialise_image_list
 
 
-def import_annotations(xml_file_path: Path, sort_frames: bool = True):
+def import_annotations(xml_file_path: Path, sort_frames: bool = False):
     """
     Open a CVAT XML annotation file,
     convert the annotations into patrick.data.image.Image format,
