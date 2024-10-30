@@ -91,3 +91,8 @@ class Image(DataHandler):
             )
 
         return image_array
+
+    def get_boxes(self):
+        return [
+            annotation for annotation in self._annotations if annotation.type == "box"
+        ]

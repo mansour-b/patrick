@@ -5,7 +5,8 @@ from patrick.data.data_handler import DataHandler
 
 
 class Annotation(DataHandler):
-    pass
+    def __init__(self, label: str):
+        self._label = label
 
     @abstractmethod
     def rescale(self, w_ratio: str, h_ratio: str):
@@ -26,7 +27,7 @@ class Polyline(Annotation):
         label: str,
         point_list: list[tuple[float, float]],
     ):
-        self._label = label
+        super().__init__(label)
         self._point_list = [(float(coord[0]), float(coord[1])) for coord in point_list]
 
     @staticmethod
