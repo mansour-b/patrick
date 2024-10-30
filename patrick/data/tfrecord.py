@@ -1,23 +1,20 @@
-from pathlib import Path
-
 import tensorflow as tf
 
 from patrick.data.image import Image
 from patrick.efficientdet.dataset import tfrecord_util as tfru
 
 
-def image_to_example(image: Image, data_dir_path: Path):
-    image_path = data_dir_path / image.name
+def image_to_example(image: Image, data_dir_name: str):
 
-    image_str = tf.io.read_file(image_path)
+    image_bytes = image.get_image_array(data_dir_name).tobytes()
 
     normalised_box_coords = compute_normalised_box_coordinates(image)
     label_list = [box._label for box in image.get_boxes()]
     feature_dict = {
-        "image/height": tfru.int64_feature(image.height),
-        "image/width": tfru.int64_feature(image.width),
-        "image/file_name": tfru.bytes_feature(image.name.encode("utf8")),
-        "image/raw": tfru.bytes_feature(image_str),
+        "image/height": tfru.int64_feature(image._height),
+        "image/width": tfru.int64_feature(image._width),
+        "image/file_name": tfru.bytes_feature(image._name.encode("utf8")),
+        "image/raw": tfru.bytes_feature(image_bytes),
         "image/format": tfru.bytes_feature("png".encode("utf8")),
         **{
             f"image/object/bbox/{k}": tfru.float_list_feature(v)
