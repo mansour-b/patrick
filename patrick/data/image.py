@@ -40,6 +40,9 @@ class Image(DataHandler):
             ],
         )
 
+    def to_serialisable_dict(self):
+        return self.to_dict()
+
     def resize(self, target_width: int, target_height: int):
         w_ratio = target_width / self._width
         h_ratio = target_height / self._height

@@ -23,6 +23,10 @@ class DataHandler(ABC):
             for attribute in self._printable_fields()
         }
 
+    @abstractmethod
+    def to_serialisable_dict(self):
+        pass
+
     def __repr__(self):
         attribute_str = ", ".join([f"{k}={v}" for k, v in self.to_dict().items()])
         return f"{type(self).__name__}({attribute_str})"

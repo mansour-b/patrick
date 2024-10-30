@@ -1,8 +1,6 @@
 from abc import abstractmethod
 from xml.etree.ElementTree import Element
 
-import numpy as np
-
 from patrick.data.data_handler import DataHandler
 
 
@@ -22,10 +20,10 @@ class Polyline(Annotation):
     def __init__(
         self,
         label: str,
-        point_list: dict[str, np.array],
+        point_list: list[tuple[float, float]],
     ):
         self._label = label
-        self._point_list = point_list
+        self._point_list = [(float(coord[0]), float(coord[1])) for coord in point_list]
 
     @staticmethod
     def _printable_fields():
@@ -39,7 +37,10 @@ class Polyline(Annotation):
         return cls(label, point_list)
 
     def rescale(self, w_ratio: float, h_ratio: float):
-        self._point_list = list(np.array((w_ratio, h_ratio)) * self._point_list)
+        self._point_list = [(x * w_ratio, y * h_ratio) for x, y in self._point_list]
+
+    def to_serialisable_dict(self):
+        return self.to_dict()
 
 
 def annotation_factory(annotation_xml: Element) -> Annotation:
@@ -49,7 +50,7 @@ def annotation_factory(annotation_xml: Element) -> Annotation:
     return annotation_class.from_xml(annotation_xml)
 
 
-def parse_point_str(point_str: str) -> list[np.array]:
+def parse_point_str(point_str: str) -> list[tuple[float, float]]:
     point_str_list = point_str.split(";")
     coord_str_list = [point_str.split(",") for point_str in point_str_list]
-    return [np.array(coord_str).astype(float) for coord_str in coord_str_list]
+    return [(float(coord_str[0]), float(coord_str[1])) for coord_str in coord_str_list]
