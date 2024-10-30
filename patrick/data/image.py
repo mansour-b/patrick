@@ -3,7 +3,11 @@ from xml.etree.ElementTree import Element
 import numpy as np
 
 from patrick import PATRICK_DIR_PATH
-from patrick.data.annotation import Annotation, annotation_factory
+from patrick.data.annotation import (
+    Annotation,
+    annotation_dict_factory,
+    annotation_xml_factory,
+)
 from patrick.data.data_handler import DataHandler
 
 
@@ -36,7 +40,19 @@ class Image(DataHandler):
             width=attrib["width"],
             height=attrib["height"],
             annotations=[
-                annotation_factory(annotation_xml) for annotation_xml in data_xml
+                annotation_xml_factory(annotation_xml) for annotation_xml in data_xml
+            ],
+        )
+
+    @classmethod
+    def from_dict(cls, data_as_dict: dict):
+        return cls(
+            name=data_as_dict["name"],
+            width=data_as_dict["width"],
+            height=data_as_dict["height"],
+            annotations=[
+                annotation_dict_factory(annotation_as_dict)
+                for annotation_as_dict in data_as_dict["annotations"]
             ],
         )
 

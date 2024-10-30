@@ -15,6 +15,10 @@ class Annotation(DataHandler):
     def type(self) -> str:
         return type(self).__name__.lower()
 
+    def to_dict(self):
+        output = super().to_dict()
+        return {"type": self.type, **output}
+
 
 class Polyline(Annotation):
     def __init__(
@@ -36,14 +40,28 @@ class Polyline(Annotation):
         point_list = parse_point_str(attrib["points"])
         return cls(label, point_list)
 
+    @classmethod
+    def from_dict(cls, data_as_dict: dict):
+        label = data_as_dict["label"]
+        point_list = [tuple(point) for point in data_as_dict["point_list"]]
+        return cls(label, point_list)
+
     def rescale(self, w_ratio: float, h_ratio: float):
         self._point_list = [(x * w_ratio, y * h_ratio) for x, y in self._point_list]
 
 
-def annotation_factory(annotation_xml: Element) -> Annotation:
-    annotation_type_dict = {"polyline": Polyline}
+ANNOTATION_TYPE_DICT = {"polyline": Polyline}
+
+
+def annotation_dict_factory(annotation_as_dict: dict) -> Annotation:
+    annotation_type = annotation_as_dict["type"]
+    annotation_class = ANNOTATION_TYPE_DICT[annotation_type]
+    return annotation_class.from_dict(annotation_as_dict)
+
+
+def annotation_xml_factory(annotation_xml: Element) -> Annotation:
     annotation_type = annotation_xml.tag
-    annotation_class = annotation_type_dict[annotation_type]
+    annotation_class = ANNOTATION_TYPE_DICT[annotation_type]
     return annotation_class.from_xml(annotation_xml)
 
 
