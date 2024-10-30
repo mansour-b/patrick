@@ -40,8 +40,12 @@ class Image(DataHandler):
             ],
         )
 
-    def to_serialisable_dict(self):
-        return self.to_dict()
+    def to_dict(self):
+        output = super().to_dict()
+        output["annotations"] = [
+            annotation.to_dict() for annotation in self._annotations
+        ]
+        return output
 
     def resize(self, target_width: int, target_height: int):
         w_ratio = target_width / self._width

@@ -39,9 +39,6 @@ class Polyline(Annotation):
     def rescale(self, w_ratio: float, h_ratio: float):
         self._point_list = [(x * w_ratio, y * h_ratio) for x, y in self._point_list]
 
-    def to_serialisable_dict(self):
-        return self.to_dict()
-
 
 def annotation_factory(annotation_xml: Element) -> Annotation:
     annotation_type_dict = {"polyline": Polyline}
