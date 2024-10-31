@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from moviepy.video.io.bindings import mplfig_to_npimage
 
 from patrick import PATRICK_DIR_PATH
-from patrick.data.annotation import Annotation, Polyline
+from patrick.data.annotation import Annotation, Box, Polyline
 from patrick.data.image import Image
 
 
@@ -46,9 +46,20 @@ def plot_image(
 
 
 def plot_annotation(ax, annotation: Annotation, color: str):
-    annotation_type_dict = {"polyline": plot_polyline}
+    annotation_type_dict = {"box": plot_box, "polyline": plot_polyline}
     plot_function = annotation_type_dict[annotation.type]
     plot_function(ax, annotation, color)
+
+
+def plot_box(ax, box: Box, color: str):
+    ax.add_patch(
+        plt.Rectangle(
+            xy=(box.xmax, box.ymin),
+            width=box._width,
+            height=box._height,
+            edgecolor=color,
+        )
+    )
 
 
 def plot_polyline(ax, polyline: Polyline, color: str):
