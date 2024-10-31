@@ -21,6 +21,31 @@ class Annotation(DataHandler):
         return {"type": self.type, **output}
 
 
+class Box(Annotation):
+    def __init__(self, label: str, x: float, y: float, width: float, height: float):
+        super().__init__(label)
+        self._x = float(x)
+        self._y = float(y)
+        self._width = float(width)
+        self._height = float(height)
+
+    @property
+    def xmin(self):
+        return self._x
+
+    @property
+    def xmax(self):
+        return self._x + self._width
+
+    @property
+    def ymin(self):
+        return self._y
+
+    @property
+    def ymax(self):
+        return self._y + self._height
+
+
 class Polyline(Annotation):
     def __init__(
         self,
