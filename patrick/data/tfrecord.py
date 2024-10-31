@@ -1,7 +1,23 @@
+import json
+
 import tensorflow as tf
 
+from patrick import PATRICK_DIR_PATH
 from patrick.data.image import Image
+from patrick.data.operations import deserialise_image_list
 from patrick.efficientdet.dataset import tfrecord_util as tfru
+
+
+def make_tfrecords(experiment: str, image_width: int, image_height: int):
+
+    image_list = load_image_list(experiment, image_width, image_height)
+
+    output_file_path = PATRICK_DIR_PATH / f"tfrecords/{experiment}.tfrecord"
+
+    with tf.io.TFRecordWriter(output_file_path) as writer:
+        for image in image_list:
+            example = image_to_example(image, image_dir_name=experiment)
+            writer.write(example.SerializeToString())
 
 
 def image_to_example(image: Image, data_dir_name: str):
@@ -38,3 +54,17 @@ def compute_normalised_box_coordinates(image: Image) -> dict[str, list[float]]:
         "ymin": ymin_list,
         "ymax": ymax_list,
     }
+
+
+def load_image_list(experiment: str, image_width: int = None, image_height: int = None):
+    file_path = PATRICK_DIR_PATH / f"annotations/{experiment}.json"
+
+    with open(file_path) as f:
+        image_list = deserialise_image_list(json.load(f))
+
+    if image_width is None or image_height is None:
+        return image_list
+
+    for image in image_list:
+        image.resize(image_width, image_height)
+    return image_list
