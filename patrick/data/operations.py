@@ -10,12 +10,30 @@ def deserialise_image_list(image_as_dict_list: list[dict]) -> list[Image]:
     return [Image.from_dict(image_as_dict) for image_as_dict in image_as_dict_list]
 
 
-def polyline_to_box(polyline: Polyline) -> Box:
-    points = polyline._point_list
-    xmin = min(point[0] for point in points)
-    xmax = max(point[0] for point in points)
-    ymin = min(point[1] for point in points)
-    ymax = max(point[1] for point in points)
+def polyline_to_box(polyline: Polyline, w_padding: float, h_padding: float) -> Box:
+    xmin, xmax, ymin, ymax = get_bounding_box(polyline._point_list)
+
+    bbox_width = xmax - xmin
+    bbox_height = ymax - ymin
+
+    output_width = bbox_width * (1 + w_padding)
+    output_height = bbox_height * (1 + h_padding)
+
+    x = xmin - bbox_width * w_padding / 2
+    y = ymin - bbox_height * h_padding / 2
+
     return Box(
-        label=polyline._label, x=xmin, y=ymin, width=xmax - xmin, height=ymax - ymin
+        label=polyline._label, x=x, y=y, width=output_width, height=output_height
     )
+
+
+def get_bounding_box(
+    point_list: list[tuple[float, float]]
+) -> tuple[float, float, float, float]:
+
+    xmin = min(point[0] for point in point_list)
+    xmax = max(point[0] for point in point_list)
+    ymin = min(point[1] for point in point_list)
+    ymax = max(point[1] for point in point_list)
+
+    return xmin, xmax, ymin, ymax
