@@ -55,7 +55,7 @@ class Box(Annotation):
 
     @classmethod
     def from_dict(cls, data_as_dict):
-        return super().from_dict(data_as_dict)
+        return cls(**data_as_dict)
 
     def rescale(self, w_ratio, h_ratio):
         self._x = self._x * w_ratio
