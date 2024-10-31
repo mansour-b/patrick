@@ -45,6 +45,21 @@ class Box(Annotation):
     def ymax(self):
         return self._y + self._height
 
+    @staticmethod
+    def _printable_fields():
+        return ["label", "x", "y", "width", "height"]
+
+    @classmethod
+    def from_xml(cls, data_xml):
+        return super().from_xml(data_xml)
+
+    @classmethod
+    def from_dict(cls, data_as_dict):
+        return super().from_dict(data_as_dict)
+
+    def rescale(self, w_ratio, h_ratio):
+        return super().rescale(w_ratio, h_ratio)
+
 
 class Polyline(Annotation):
     def __init__(
