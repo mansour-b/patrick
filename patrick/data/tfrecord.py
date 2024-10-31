@@ -14,9 +14,9 @@ def make_tfrecords(experiment: str, image_width: int, image_height: int):
 
     output_file_path = PATRICK_DIR_PATH / f"tfrecords/{experiment}.tfrecord"
 
-    with tf.io.TFRecordWriter(output_file_path) as writer:
+    with tf.io.TFRecordWriter(str(output_file_path)) as writer:
         for image in image_list:
-            example = image_to_example(image, image_dir_name=experiment)
+            example = image_to_example(image, data_dir_name=experiment)
             writer.write(example.SerializeToString())
 
 
