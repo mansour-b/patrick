@@ -54,10 +54,11 @@ def plot_annotation(ax, annotation: Annotation, color: str):
 def plot_box(ax, box: Box, color: str):
     ax.add_patch(
         plt.Rectangle(
-            xy=(box.xmax, box.ymin),
+            xy=(box.xmin, box.ymin),
             width=box._width,
             height=box._height,
             edgecolor=color,
+            facecolor="none",
         )
     )
 
