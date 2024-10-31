@@ -94,7 +94,7 @@ class Polyline(Annotation):
         self._point_list = [(x * w_ratio, y * h_ratio) for x, y in self._point_list]
 
 
-ANNOTATION_TYPE_DICT = {"polyline": Polyline}
+ANNOTATION_TYPE_DICT = {"box": Box, "polyline": Polyline}
 
 
 def annotation_dict_factory(annotation_as_dict: dict) -> Annotation:
