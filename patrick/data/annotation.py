@@ -51,7 +51,7 @@ class Box(Annotation):
 
     @classmethod
     def from_xml(cls, data_xml):
-        return super().from_xml(data_xml)
+        raise NotImplementedError
 
     @classmethod
     def from_dict(cls, data_as_dict):
