@@ -58,7 +58,10 @@ class Box(Annotation):
         return super().from_dict(data_as_dict)
 
     def rescale(self, w_ratio, h_ratio):
-        return super().rescale(w_ratio, h_ratio)
+        self._x = self._x * w_ratio
+        self._y = self._y * h_ratio
+        self._width = self._width * w_ratio
+        self._height = self._height * w_ratio
 
 
 class Polyline(Annotation):
