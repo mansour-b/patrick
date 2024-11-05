@@ -50,7 +50,7 @@ def image_to_example(image: Image, data_dir_name: str):
         "image/file_name": Feature(
             bytes_list=BytesList(value=[image._name.encode("utf8")])
         ),
-        "image/raw": Feature(bytes_list=BytesList(value=[image_bytes])),
+        "image/encoded": Feature(bytes_list=BytesList(value=[image_bytes])),
         "image/format": Feature(bytes_list=BytesList(value=["png".encode("utf8")])),
         **{
             f"image/object/bbox/{k}": Feature(float_list=FloatList(value=v))
