@@ -21,14 +21,21 @@ def make_tfrecords(experiment: str, image_width: int, image_height: int):
             writer.write(example.SerializeToString())
 
 
-def cast_to_int(image_array: np.array) -> np.array:
+def cast_to_int(image_array: np.array, base: int = 8) -> np.array:
     min_val = image_array.min()
     max_val = image_array.max()
     max_range = max_val - min_val
 
     normalised_image = (image_array - min_val) / max_range
 
-    return 255 * normalised_image.astype(np.uint16)
+    int_dict = {
+        8: {"max_value": 255, "type": np.uint8},
+        16: {"max_value": 65535, "type": np.uint16},
+    }
+    max_int_val = int_dict[base]["max_value"]
+    output_type = int_dict[base]["type"]
+
+    return (max_int_val * normalised_image).astype(dtype=output_type)
 
 
 def add_channels_dim(image_array: np.array) -> np.array:
@@ -38,9 +45,8 @@ def add_channels_dim(image_array: np.array) -> np.array:
 def image_to_example(image: Image, data_dir_name: str):
 
     int_image_array = cast_to_int(image.get_image_array(data_dir_name))
-    image_bytes = tf.io.encode_png(add_channels_dim(int_image_array))
-
-    image_bytes = image.get_image_array(data_dir_name).tobytes()
+    int_image_array = add_channels_dim(int_image_array)
+    image_bytes = tf.io.encode_png(int_image_array).numpy()
 
     normalised_box_coords = compute_normalised_box_coordinates(image)
     label_list = [box._label.encode("utf8") for box in image.get_boxes()]
