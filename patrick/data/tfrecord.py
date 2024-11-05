@@ -1,11 +1,12 @@
 import json
 
+import numpy as np
 import tensorflow as tf
+from tensorflow.train import BytesList, Example, Feature, Features, FloatList, Int64List
 
 from patrick import PATRICK_DIR_PATH
 from patrick.data.image import Image
 from patrick.data.operations import deserialise_image_list
-from patrick.efficientdet.dataset import tfrecord_util as tfru
 
 
 def make_tfrecords(experiment: str, image_width: int, image_height: int):
@@ -20,26 +21,47 @@ def make_tfrecords(experiment: str, image_width: int, image_height: int):
             writer.write(example.SerializeToString())
 
 
+def cast_to_int(image_array: np.array) -> np.array:
+    min_val = image_array.min()
+    max_val = image_array.max()
+    max_range = max_val - min_val
+
+    normalised_image = (image_array - min_val) / max_range
+
+    return 255 * normalised_image.astype(np.uint16)
+
+
+def add_channels_dim(image_array: np.array) -> np.array:
+    return np.expand_dims(image_array, axis=-1)
+
+
 def image_to_example(image: Image, data_dir_name: str):
+
+    int_image_array = cast_to_int(image.get_image_array(data_dir_name))
+    image_bytes = tf.io.encode_png(add_channels_dim(int_image_array))
 
     image_bytes = image.get_image_array(data_dir_name).tobytes()
 
     normalised_box_coords = compute_normalised_box_coordinates(image)
     label_list = [box._label.encode("utf8") for box in image.get_boxes()]
     feature_dict = {
-        "image/height": tfru.int64_feature(image._height),
-        "image/width": tfru.int64_feature(image._width),
-        "image/file_name": tfru.bytes_feature(image._name.encode("utf8")),
-        "image/raw": tfru.bytes_feature(image_bytes),
-        "image/format": tfru.bytes_feature("png".encode("utf8")),
+        "image/height": Feature(int64_list=Int64List(value=[image._height])),
+        "image/width": Feature(int64_list=Int64List(value=[image._width])),
+        "image/file_name": Feature(
+            bytes_list=BytesList(value=[image._name.encode("utf8")])
+        ),
+        "image/raw": Feature(bytes_list=BytesList(value=[image_bytes])),
+        "image/format": Feature(bytes_list=BytesList(value=["png".encode("utf8")])),
         **{
-            f"image/object/bbox/{k}": tfru.float_list_feature(v)
+            f"image/object/bbox/{k}": Feature(float_list=FloatList(value=v))
             for k, v in normalised_box_coords.items()
         },
-        "image/object/class/object_type": tfru.bytes_list_feature(label_list),
+        "image/object/class/object_type": Feature(
+            bytes_list=BytesList(value=label_list)
+        ),
     }
 
-    example = tf.train.Example(features=tf.train.Features(feature=feature_dict))
+    example = Example(features=Features(feature=feature_dict))
     return example
 
 
