@@ -1,30 +1,36 @@
+import torch
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader
+
+from patrick.data.image import Image
+from patrick.efficientdet import EfficientDetDataset
 
 
 class EfficientDetDataModule(LightningDataModule):
 
     def __init__(
         self,
-        train_dataset_adaptor,
-        validation_dataset_adaptor,
-        train_transforms=get_train_transforms(target_img_size=512),
-        valid_transforms=get_valid_transforms(target_img_size=512),
-        num_workers=4,
-        batch_size=8,
+        train_image_list: list[Image],
+        val_image_list: list[Image],
+        image_dir_name: str,
+        label_map: dict[str, int],
+        num_workers: int = 4,
+        batch_size: int = 8,
     ):
 
-        self.train_ds = train_dataset_adaptor
-        self.valid_ds = validation_dataset_adaptor
-        self.train_tfms = train_transforms
-        self.valid_tfms = valid_transforms
+        self._train_image_list = train_image_list
+        self._val_image_list = val_image_list
+        self._image_dir_name = image_dir_name
+        self._label_map = label_map
         self.num_workers = num_workers
         self.batch_size = batch_size
         super().__init__()
 
     def train_dataset(self) -> EfficientDetDataset:
         return EfficientDetDataset(
-            dataset_adaptor=self.train_ds, transforms=self.train_tfms
+            image_list=self._train_image_list,
+            image_dir_name=self._image_dir_name,
+            label_map=self._label_map,
         )
 
     def train_dataloader(self) -> DataLoader:
@@ -43,7 +49,9 @@ class EfficientDetDataModule(LightningDataModule):
 
     def val_dataset(self) -> EfficientDetDataset:
         return EfficientDetDataset(
-            dataset_adaptor=self.valid_ds, transforms=self.valid_tfms
+            image_list=self._val_image_list,
+            image_dir_name=self._image_dir_name,
+            label_map=self._label_map,
         )
 
     def val_dataloader(self) -> DataLoader:
