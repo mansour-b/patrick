@@ -55,4 +55,4 @@ class EfficientDetDataset(Dataset):
 
     def make_label_array(self, box_list: list[Box]) -> np.array:
         label_map = self._label_map
-        return np.array([label_map[box.label] for box in box_list])
+        return np.array([label_map[box._label] for box in box_list])
