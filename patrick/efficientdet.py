@@ -21,6 +21,7 @@ class EfficientDetDataset(Dataset):
         image = self._image_list[index]
 
         image_array = self.load_image_array(image)
+        image_tensor = torch.from_numpy(image_array)
 
         box_list = image.get_boxes()
         box_array = self.make_xyxy_box_array(box_list)
@@ -34,17 +35,21 @@ class EfficientDetDataset(Dataset):
             "img_scale": torch.tensor([1.0]),
         }
 
-        return image_array, target, index
+        return image_tensor, target, index
 
     def __len__(self):
         return len(self._image_list)
 
-    def load_image_array(self, image: Image) -> np.array:
+    def load_image_array(
+        self, image: Image, channel_mode: str = "channels_first"
+    ) -> np.array:
         image_array = image.get_image_array(self._image_dir_name).astype(
             np.float32, casting="same_kind"
         )
-        image_array = np.expand_dims(image_array, axis=0)
-        return image_array
+        channel_axis_dict = {"channels_first": 0, "channels_last": -1}
+        channel_axis = channel_axis_dict[channel_mode]
+        image_array = np.expand_dims(image_array, axis=channel_axis)
+        return np.repeat(image_array, repeats=3, axis=channel_axis)
 
     @staticmethod
     def box_to_xyxy_format(box: Box) -> list[float]:
