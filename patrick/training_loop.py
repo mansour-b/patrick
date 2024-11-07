@@ -1,13 +1,37 @@
-from functools import singledispatch
-from numbers import Number
 from typing import List
 
 import numpy as np
 import torch
+from effdet import DetBenchTrain, EfficientDet, get_efficientdet_config
+from effdet.config.model_config import efficientdet_model_param_dict
+from effdet.efficientdet import HeadNet
 from ensemble_boxes import ensemble_boxes_wbf
 from fastcore.dispatch import typedispatch
 from pytorch_lightning import LightningModule
 from pytorch_lightning.core.decorators import auto_move_data
+
+
+def create_model(num_classes=1, image_size=512, architecture="tf_efficientnetv2_l"):
+    efficientdet_model_param_dict["tf_efficientnetv2_l"] = dict(
+        name="tf_efficientnetv2_l",
+        backbone_name="tf_efficientnetv2_l",
+        backbone_args=dict(drop_path_rate=0.2),
+        num_classes=num_classes,
+        url="",
+    )
+
+    config = get_efficientdet_config(architecture)
+    config.update({"num_classes": num_classes})
+    config.update({"image_size": (image_size, image_size)})
+
+    print(config)
+
+    net = EfficientDet(config, pretrained_backbone=True)
+    net.class_net = HeadNet(
+        config,
+        num_outputs=config.num_classes,
+    )
+    return DetBenchTrain(net, config)
 
 
 def run_wbf(predictions, image_size=512, iou_thr=0.44, skip_box_thr=0.43, weights=None):
@@ -44,7 +68,6 @@ class EfficientDetModel(LightningModule):
         prediction_confidence_threshold=0.2,
         learning_rate=0.0002,
         wbf_iou_threshold=0.44,
-        inference_transforms=get_valid_transforms(target_img_size=512),
         model_architecture="tf_efficientnetv2_l",
     ):
         super().__init__()
@@ -55,7 +78,6 @@ class EfficientDetModel(LightningModule):
         self.prediction_confidence_threshold = prediction_confidence_threshold
         self.lr = learning_rate
         self.wbf_iou_threshold = wbf_iou_threshold
-        self.inference_tfms = inference_transforms
 
     @auto_move_data
     def forward(self, images, targets):
@@ -68,11 +90,6 @@ class EfficientDetModel(LightningModule):
         images, annotations, _, image_ids = batch
 
         losses = self.model(images, annotations)
-
-        logging_losses = {
-            "class_loss": losses["class_loss"].detach(),
-            "box_loss": losses["box_loss"].detach(),
-        }
 
         self.log(
             "train_loss",
