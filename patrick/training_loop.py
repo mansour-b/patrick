@@ -173,7 +173,10 @@ class EfficientDetModel(LightningModule):
         Args:
             images: a list of PIL images
 
-        Returns: a tuple of lists containing bboxes, predicted_class_labels, predicted_class_confidences
+        Returns: a tuple of lists containing:
+            - bboxes,
+            - predicted_class_labels,
+            - predicted_class_confidences.
 
         """
         image_sizes = [(image.size[1], image.size[0]) for image in images]
@@ -197,7 +200,10 @@ class EfficientDetModel(LightningModule):
         Args:
             images_tensor: the images tensor returned from the dataloader
 
-        Returns: a tuple of lists containing bboxes, predicted_class_labels, predicted_class_confidences
+        Returns: a tuple of lists containing:
+            - bboxes,
+            - predicted_class_labels,
+            - predicted_class_confidences.
 
         """
         if images_tensor.ndim == 3:
@@ -207,7 +213,8 @@ class EfficientDetModel(LightningModule):
             or images_tensor.shape[-2] != self.img_size
         ):
             raise ValueError(
-                f"Input tensors must be of shape (N, 3, {self.img_size}, {self.img_size})"
+                f"Input tensors must be of shape "
+                f"(N, 3, {self.img_size}, {self.img_size})"
             )
 
         num_images = images_tensor.shape[0]
