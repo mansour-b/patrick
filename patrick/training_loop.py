@@ -8,7 +8,6 @@ from effdet.efficientdet import HeadNet
 from ensemble_boxes import ensemble_boxes_wbf
 from fastcore.dispatch import typedispatch
 from pytorch_lightning import LightningModule
-from pytorch_lightning.core.decorators import auto_move_data
 
 
 def create_model(num_classes=1, image_size=512, architecture="tf_efficientnetv2_l"):
@@ -79,7 +78,6 @@ class EfficientDetModel(LightningModule):
         self.lr = learning_rate
         self.wbf_iou_threshold = wbf_iou_threshold
 
-    @auto_move_data
     def forward(self, images, targets):
         return self.model(images, targets)
 
