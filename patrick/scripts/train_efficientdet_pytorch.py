@@ -43,18 +43,33 @@ def load_images(
 
 def make_parser():
     parser = ArgumentParser()
-    # experiment
-    # image_size
-    # polyline_to_box_padding
-    # num_workers 4
-    # batch_size 2
-    # prediction_confidence_threshold 0.2
-    # learning_rate 0.0002
-    # wbf_iou_threshold 0.44
-    # model_architecture tf_efficientnetv2_l
-    # num_nodes
-    # max_epochs
-    # num_sanity_val_steps
+    parser.add_argument("--experiment", help="Name of the simulation, e.g., 'blob_i'")
+    parser.add_argument("--image_size", type=int, default=512)
+    parser.add_argument(
+        "--polyline_to_box_padding",
+        type=float,
+        default=0.5,
+        help="Margins around the objects for bounding boxes",
+    )
+    parser.add_argument("--num_workers", type=int, default=4)
+    parser.add_argument("--batch_size", type=int, default=2)
+    parser.add_argument("--prediction_confidence_threshold", type=float, default=0.2)
+    parser.add_argument("--learning_rate", type=float, default=0.0002)
+    parser.add_argument(
+        "--wbf_iou_threshold",
+        type=float,
+        default=0.44,
+        help="WBF = Weighted Boxes Fusion",
+    )
+    parser.add_argument(
+        "--model_architecture",
+        default="tf_efficientnetv2_l",
+        help="Backbone of the neural network",
+    )
+    parser.add_argument("--num_nodes", type=int, default=1)
+    parser.add_argument("--max_epochs", type=int, default=100)
+    parser.add_argument("--num_sanity_val_steps", type=int, default=1)
+
     return parser
 
 
