@@ -1,12 +1,9 @@
-from typing import List
-
 import numpy as np
 import torch
 from effdet import DetBenchTrain, EfficientDet, get_efficientdet_config
 from effdet.config.model_config import efficientdet_model_param_dict
 from effdet.efficientdet import HeadNet
 from ensemble_boxes import ensemble_boxes_wbf
-from fastcore.dispatch import typedispatch
 from pytorch_lightning import LightningModule
 
 
@@ -164,34 +161,6 @@ class EfficientDetModel(LightningModule):
 
         return {"loss": outputs["loss"], "batch_predictions": batch_predictions}
 
-    @typedispatch
-    def predict(self, images: List):
-        """
-        For making predictions from images
-        Args:
-            images: a list of PIL images
-
-        Returns: a tuple of lists containing:
-            - bboxes,
-            - predicted_class_labels,
-            - predicted_class_confidences.
-
-        """
-        image_sizes = [(image.size[1], image.size[0]) for image in images]
-        images_tensor = torch.stack(
-            [
-                self.inference_tfms(
-                    image=np.array(image, dtype=np.float32),
-                    labels=np.ones(1),
-                    bboxes=np.array([[0, 0, 1, 1]]),
-                )["image"]
-                for image in images
-            ]
-        )
-
-        return self._run_inference(images_tensor, image_sizes)
-
-    @typedispatch
     def predict(self, images_tensor: torch.Tensor):
         """
         For making predictions from tensors returned from the model's dataloader
@@ -244,9 +213,9 @@ class EfficientDetModel(LightningModule):
         dummy_targets = {
             "bbox": [
                 torch.tensor([[0.0, 0.0, 0.0, 0.0]], device=self.device)
-                for i in range(num_images)
+                for _ in range(num_images)
             ],
-            "cls": [torch.tensor([1.0], device=self.device) for i in range(num_images)],
+            "cls": [torch.tensor([1.0], device=self.device) for _ in range(num_images)],
             "img_size": torch.tensor(
                 [(self.img_size, self.img_size)] * num_images, device=self.device
             ).float(),
