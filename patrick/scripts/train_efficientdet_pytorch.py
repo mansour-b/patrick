@@ -113,6 +113,7 @@ if __name__ == "__main__":
         max_epochs=args.max_epochs,
         num_sanity_val_steps=args.num_sanity_val_steps,
     )
-    trainer.fit(model, data_module)
-
-    torch.save(model.state_dict(), model_path)
+    try:
+        trainer.fit(model, data_module)
+    except KeyboardInterrupt:
+        torch.save(model.state_dict(), model_path)
