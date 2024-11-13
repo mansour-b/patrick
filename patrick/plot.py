@@ -23,6 +23,7 @@ def make_movie(image_list: list[Image], image_dir_name: str, fps: int, format: s
                 image, image_dir_name, show_figure=False, return_figure=True
             )
             writer.append_data(mplfig_to_npimage(fig))
+            plt.close(fig)
 
 
 def plot_image(
