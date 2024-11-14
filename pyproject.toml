@@ -16,6 +16,7 @@ readme = "README.md"
 
 [tool.ruff.lint]
 select = ["ALL"]
+ignore = ["ANN201", "COM812", "D100", "D103", "T201"]
 
 [tool.ruff]
 line-length = 88

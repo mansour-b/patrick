@@ -59,12 +59,9 @@ if __name__ == "__main__":
     run = wandb.init()
     run.name = time_str
 
-    experiment = "movies_241018"
-    frame = 2600
+    input_file_name = "mosaic.txt"
 
-    learnable_image = load_data(
-        experiment, frame, args.offset_type, field="turbulent_intensity"
-    )
+    learnable_image = load_data(input_file_name, args.offset_type)
 
     num_workers_per_row = get_num_workers_per_row(
         atom_width=args.atom_size,
@@ -95,10 +92,10 @@ if __name__ == "__main__":
         "dicod_kwargs": {"max_iter": 10000},
         "verbose": 1,
     }
-    log_dicodile_params(dicodile_kwargs, experiment, frame, time_str)
+    log_dicodile_params(dicodile_kwargs, input_file_name, time_str)
 
     D_hat, z_hat, pobj, times = dicodile(learnable_image, D_init, **dicodile_kwargs)
-    save_results(D_hat, z_hat, experiment, frame, time_str)
+    save_results(D_hat, z_hat, input_file_name, time_str)
 
     estimation_metrics = compute_metrics(learnable_image, D_hat, z_hat)
 
