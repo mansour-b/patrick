@@ -13,3 +13,9 @@ authors = [
 ]
 description = "Pattern discovery on TOKAM2D movies"
 readme = "README.md"
+
+[tool.ruff.lint]
+select = ["ALL"]
+
+[tool.ruff]
+line-length = 88
