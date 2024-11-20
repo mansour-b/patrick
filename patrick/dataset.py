@@ -98,13 +98,16 @@ class KeypointDataset(Dataset):
         ]
         box_array = self.make_xyxy_box_array(box_list)
         label_array = self.make_label_array(box_list)
+        area_array = self.make_area_array(box_list)
         keypoint_array = self.make_keypoint_array(image._annotations)
 
         target = {
             "image_id": index,
             "boxes": torch.as_tensor(box_array, dtype=torch.float32),
+            "area": torch.as_tensor(area_array),
             "labels": torch.as_tensor(label_array),
             "keypoints": torch.as_tensor(keypoint_array, dtype=torch.float32),
+            "iscrowd": torch.zeros((len(box_list),), dtype=torch.int64),
         }
 
         return image_tensor, target
@@ -142,3 +145,7 @@ class KeypointDataset(Dataset):
                 for polyline in keypoint_list
             ]
         )
+
+    @staticmethod
+    def make_area_array(box_list: list[Box]) -> np.array:
+        return np.array([box._width * box._height for box in box_list])
