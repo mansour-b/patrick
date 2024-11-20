@@ -47,10 +47,10 @@ def save_results(d_hat: np.array, z_hat: np.array, file_name: str, time_str: str
 
 
 def load_dict_and_activations(
-    file_name: str, mode_or_timestamp: str = "latest", verbose: int = 0
+    dict_dir_name: str, mode_or_timestamp: str = "latest", verbose: int = 0
 ):
 
-    dict_path = PATRICK_DIR_PATH / "learned_dictionaries" / file_name
+    dict_path = PATRICK_DIR_PATH / "learned_dictionaries" / dict_dir_name
 
     if mode_or_timestamp == "latest":
         time_str_list = sorted(

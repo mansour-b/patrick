@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import time
 
 import imageio
@@ -10,7 +12,13 @@ from patrick.data.annotation import Annotation, Box, Polyline
 from patrick.data.image import Image
 
 
-def make_movie(image_list: list[Image], image_dir_name: str, fps: int, format: str):
+def make_movie(
+    image_list: list[Image],
+    image_dir_name: str,
+    fps: int,
+    format: str,
+    **plot_image_kwargs,
+):
 
     matplotlib.use("agg")
 
@@ -20,7 +28,11 @@ def make_movie(image_list: list[Image], image_dir_name: str, fps: int, format: s
     with imageio.get_writer(movie_path, fps=fps) as writer:
         for image in image_list:
             fig = plot_image(
-                image, image_dir_name, show_figure=False, return_figure=True
+                image,
+                image_dir_name,
+                show_figure=False,
+                return_figure=True,
+                **plot_image_kwargs,
             )
             writer.append_data(mplfig_to_npimage(fig))
             plt.close(fig)
