@@ -101,6 +101,7 @@ class KeypointDataset(Dataset):
         keypoint_array = self.make_keypoint_array(image._annotations)
 
         target = {
+            "image_id": index,
             "boxes": torch.as_tensor(box_array, dtype=torch.float32),
             "labels": torch.as_tensor(label_array),
             "keypoints": torch.as_tensor(keypoint_array, dtype=torch.float32),
