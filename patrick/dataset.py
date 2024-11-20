@@ -7,6 +7,14 @@ from patrick.data.image import Image
 from patrick.data.operations import polyline_to_box
 
 
+def rescale_histogram(image_tensor: torch.Tensor) -> torch.Tensor:
+    min_value = image_tensor.min()
+    max_value = image_tensor.max()
+    max_range = max_value - min_value
+
+    return (image_tensor - min_value) / max_range
+
+
 class BoxDataset(Dataset):
     def __init__(
         self,
@@ -22,7 +30,7 @@ class BoxDataset(Dataset):
         image = self._image_list[index]
 
         image_array = self.load_image_array(image)
-        image_tensor = torch.from_numpy(image_array)
+        image_tensor = rescale_histogram(torch.from_numpy(image_array))
 
         box_list = image.get_boxes()
         box_array = self.make_xyxy_box_array(box_list)
@@ -88,7 +96,7 @@ class KeypointDataset(Dataset):
         image = self._image_list[index]
 
         image_array = self.load_image_array(image)
-        image_tensor = torch.from_numpy(image_array)
+        image_tensor = rescale_histogram(torch.from_numpy(image_array))
 
         box_list = [
             polyline_to_box(
