@@ -18,6 +18,8 @@ class Annotation(DataHandler):
 
     def to_dict(self):
         output = super().to_dict()
+        if hasattr(self, "score"):
+            output["score"] = self.score
         return {"type": self.type, **output}
 
 
@@ -55,7 +57,11 @@ class Box(Annotation):
 
     @classmethod
     def from_dict(cls, data_as_dict):
-        return cls(**data_as_dict)
+        init_params = {k:data_as_dict[k] for k in ["label", "x", "y", "width", "height"]}
+        output =  cls(**init_params)
+        if "score" in data_as_dict:
+            output.score = data_as_dict["score"]
+        return output
 
     def rescale(self, w_ratio, h_ratio):
         self._x = self._x * w_ratio

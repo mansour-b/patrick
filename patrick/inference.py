@@ -19,16 +19,15 @@ def load_image_array(
     channel_mode: str = "channels_first",
 ) -> np.array:
     image_array = np.loadtxt(file_path).astype(np.float32, casting="same_kind")
+
     channel_axis_dict = {"channels_first": 0, "channels_last": -1}
     channel_axis = channel_axis_dict[channel_mode]
     image_array = np.expand_dims(image_array, axis=channel_axis)
     image_array = np.repeat(image_array, repeats=3, axis=channel_axis)
 
-    image_array = torch.as_tensor(
-        [
-            load_image_array(file_path),
-        ]
-    )
+    image_array = np.expand_dims(image_array, axis=0)
+
+    image_array = torch.as_tensor(image_array)
     image_array.to(device)
     return image_array
 
@@ -49,11 +48,14 @@ def make_str_label(label: int, label_map: dict[str, int]) -> str:
 
 
 def make_box_from_tensors(
-    box_xyxy: torch.Tensor, label: torch.Tensor, score: torch.Tensor
+    box_xyxy: torch.Tensor,
+    label: torch.Tensor,
+    score: torch.Tensor,
+    label_map: dict[str, int],
 ) -> Box:
     x, y, width, height = xyxy_to_xywh(*box_xyxy)
     box = Box(
-        label=make_str_label(label),
+        label=make_str_label(label, label_map),
         x=x,
         y=y,
         width=width,
@@ -67,6 +69,7 @@ def make_box_list_from_raw_predictions(
     predictions: torch.Tensor,
     nms_iou_threshold: float,
     score_threshold: float,
+    label_map: dict[str, int],
 ) -> list[Box]:
     predictions = predictions[0]
 
@@ -86,7 +89,7 @@ def make_box_list_from_raw_predictions(
     ):
         if score < score_threshold:
             continue
-        box = make_box_from_tensors(box_xyxy, label, score)
+        box = make_box_from_tensors(box_xyxy, label, score, label_map)
         box_list.append(box)
     return box_list
 
@@ -97,13 +100,14 @@ def make_predictions(
     image_name: str,
     nms_iou_threshold: float,
     score_threshold: float,
+    label_map: dict[str, int],
 ) -> Image:
     _, _, height, width = image_array.shape
 
     predictions = model(image_array.cuda())
 
     box_list = make_box_list_from_raw_predictions(
-        predictions, nms_iou_threshold, score_threshold
+        predictions, nms_iou_threshold, score_threshold, label_map
     )
     return Image(
         name=image_name,
