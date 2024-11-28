@@ -1,74 +1,113 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+import numpy as np
 import torch
+from torchvision.ops import nms
 
 from patrick.data.annotation import Box
 from patrick.data.image import Image
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def make_batch_image_tensor(
-    image_list: list[Image], image_dir_name: str
-) -> torch.Tensor:
-    output = torch.tensor(
-        [image.get_image_array(image_dir_name) for image in image_list]
+
+def load_image_array(
+    file_path: str or Path,
+    device: torch.device,
+    channel_mode: str = "channels_first",
+) -> np.array:
+    image_array = np.loadtxt(file_path).astype(np.float32, casting="same_kind")
+    channel_axis_dict = {"channels_first": 0, "channels_last": -1}
+    channel_axis = channel_axis_dict[channel_mode]
+    image_array = np.expand_dims(image_array, axis=channel_axis)
+    image_array = np.repeat(image_array, repeats=3, axis=channel_axis)
+
+    image_array = torch.as_tensor(
+        [
+            load_image_array(file_path),
+        ]
     )
-    output = output.unsqueeze(1).expand(-1, 3, -1, -1)
-    return output.float()
+    image_array.to(device)
+    return image_array
 
 
-def make_box_from_detections(box_coords: list[float], label: str, score: float) -> Box:
-    xmin, ymin, xmax, ymax = box_coords
-    box = Box(label=label, x=xmin, y=ymin, width=xmax - xmin, height=ymax - ymin)
-    box._score = score
+def xyxy_to_xywh(
+    xmin: float, ymin: float, xmax: float, ymax: float
+) -> tuple[float, float, float, float]:
+    x = xmin
+    y = ymin
+    width = xmax - xmin
+    height = ymax - ymin
+    return x, y, width, height
+
+
+def make_str_label(label: int, label_map: dict[str, int]) -> str:
+    reciprocal_label_map = {v: k for k, v in label_map.items()}
+    return reciprocal_label_map[int(label)]
+
+
+def make_box_from_tensors(
+    box_xyxy: torch.Tensor, label: torch.Tensor, score: torch.Tensor
+) -> Box:
+    x, y, width, height = xyxy_to_xywh(*box_xyxy)
+    box = Box(
+        label=make_str_label(label),
+        x=x,
+        y=y,
+        width=width,
+        height=height,
+    )
+    box.score = float(score)
     return box
 
 
-def make_box_list(
-    prediction_dict: dict[str, list], label_map: dict[str, int]
+def make_box_list_from_raw_predictions(
+    predictions: torch.Tensor,
+    nms_iou_threshold: float,
+    score_threshold: float,
 ) -> list[Box]:
-    reciprocal_label_map = {v: k for k, v in label_map.items()}
+    predictions = predictions[0]
 
-    box_coords_list = prediction_dict["box_coords"]
-    label_list = [
-        reciprocal_label_map[int(label)] for label in prediction_dict["label"]
-    ]
-    score_list = prediction_dict["score"]
+    kept_indices = nms(
+        boxes=predictions["boxes"],
+        scores=predictions["scores"],
+        iou_threshold=nms_iou_threshold,
+    )
+    for k in predictions:
+        predictions[k] = predictions[k][kept_indices]
 
-    return [
-        make_box_from_detections(box_coords, label, score)
-        for box_coords, label, score in zip(box_coords_list, label_list, score_list)
-    ]
+    box_list = []
+    for box_xyxy, label, score in zip(
+        predictions["boxes"],
+        predictions["labels"],
+        predictions["scores"],
+    ):
+        if score < score_threshold:
+            continue
+        box = make_box_from_tensors(box_xyxy, label, score)
+        box_list.append(box)
+    return box_list
 
 
-def compute_predictions(
-    image_list: list[Image],
-    image_dir_name: str,
+def make_predictions(
     model: torch.nn.Module,
-    label_map: dict[str:int],
-) -> list[Image]:
+    image_array: torch.Tensor,
+    image_name: str,
+    nms_iou_threshold: float,
+    score_threshold: float,
+) -> Image:
+    _, _, height, width = image_array.shape
 
-    batch_image_tensor = make_batch_image_tensor(image_list, image_dir_name)
+    predictions = model(image_array.cuda())
 
-    pred_bboxes, pred_labels, pred_scores = model.predict(batch_image_tensor)
-    big_prediction_list = [
-        {"box_coords": box_coords_list, "label": label_list, "score": score_list}
-        for box_coords_list, label_list, score_list in zip(
-            pred_bboxes, pred_labels, pred_scores
-        )
-    ]
-    big_prediction_dict = {
-        image._name: prediction_dict
-        for image, prediction_dict in zip(image_list, big_prediction_list)
-    }
-
-    output_image_list = []
-    for image in image_list:
-        prediction_dict = big_prediction_dict[image._name]
-        box_list = make_box_list(prediction_dict, label_map)
-        pred_image = Image(
-            name=image._name,
-            width=image._width,
-            height=image._height,
-            annotations=box_list,
-        )
-        output_image_list.append(pred_image)
-
-    return output_image_list
+    box_list = make_box_list_from_raw_predictions(
+        predictions, nms_iou_threshold, score_threshold
+    )
+    return Image(
+        name=image_name,
+        width=width,
+        height=height,
+        annotations=box_list,
+    )
