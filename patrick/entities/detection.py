@@ -5,15 +5,15 @@ from patrick import Annotation, Box, Frame, Keypoint
 
 class Model(ABC):
     @abstractmethod
-    def predict(frame: Frame) -> Annotation:
+    def predict(self, frame: Frame) -> Annotation:
         pass
 
 
 class BoxModel(Model):
-    def predict(frame: Frame) -> Box:
+    def predict(self, frame: Frame) -> Box:
         pass
 
 
 class KeypointModel(Model):
-    def predict(frame: Frame) -> Keypoint:
+    def predict(self, frame: Frame) -> Keypoint:
         pass
