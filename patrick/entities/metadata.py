@@ -12,16 +12,29 @@ class Metadata(ABC):
         pass
 
 
-class Frame(Metadata):
+class Annotation(Metadata):
     pass
+
+
+class Frame(Metadata):
+
+    def __init__(
+        self, name: str, width: int, height: int, annotation_list: list[Annotation]
+    ):
+        self.name = name
+        self.width = width
+        self.height = height
+        self.annotation_list
+
+    def make_empty_copy(self):
+        return Frame(
+            name=self.name, width=self.width, height=self.height, annotation_list=[]
+        )
 
 
 class Movie(Metadata):
-    pass
-
-
-class Annotation(Metadata):
-    pass
+    def __init__(self, frame_list: list[Frame]):
+        self.frame_list = frame_list
 
 
 class Box(Annotation):
