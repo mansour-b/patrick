@@ -2,6 +2,7 @@ from pathlib import Path
 
 from patrick.entities.detection import BoxModel, KeypointModel, Model
 from patrick.entities.metadata import Annotation, Box, Frame, Keypoint, Movie
+from patrick.entities.tracking import SORTTracker, Tracker
 
 DATA_DIR_PATH = Path.home() / "data"
 PATRICK_DIR_PATH = DATA_DIR_PATH / "pattern_detection_tokam"
@@ -16,4 +17,6 @@ __all__ = [
     "KeypointModel",
     "Model",
     "Movie",
+    "SORTTracker",
+    "Tracker",
 ]
