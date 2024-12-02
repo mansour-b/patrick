@@ -16,6 +16,20 @@ class Annotation(Metadata):
     pass
 
 
+class Box(Annotation):
+    pass
+
+
+class Keypoint(Annotation):
+    pass
+
+
+class Track(Annotation):
+    def __init__(self, track_id: int, box_list: list[Box]):
+        self.track_id = track_id
+        self.box_list = track_id
+
+
 class Frame(Metadata):
 
     def __init__(
@@ -33,17 +47,6 @@ class Frame(Metadata):
 
 
 class Movie(Metadata):
-    def __init__(self, frame_list: list[Frame]):
+    def __init__(self, frame_list: list[Frame], track_list: list[Track]):
         self.frame_list = frame_list
-
-
-class Box(Annotation):
-    pass
-
-
-class Keypoint(Annotation):
-    pass
-
-
-class Track(Annotation):
-    pass
+        self.track_list = track_list

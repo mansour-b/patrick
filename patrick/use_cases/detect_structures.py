@@ -15,5 +15,6 @@ def detect_structures_in_movie(movie: Movie, model: Model) -> Movie:
     return Movie(
         frame_list=[
             detect_structures_on_frame(frame, model) for frame in movie.frame_list
-        ]
+        ],
+        track_list=[],
     )
