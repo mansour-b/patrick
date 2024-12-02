@@ -1,7 +1,9 @@
 from pathlib import Path
 
+from patrick.entities.annotation import Annotation, Box, Keypoint, Track
 from patrick.entities.detection import BoxModel, KeypointModel, Model
-from patrick.entities.metadata import Annotation, Box, Frame, Keypoint, Movie
+from patrick.entities.frame import Frame
+from patrick.entities.movie import Movie
 from patrick.entities.tracking import SORTTracker, Tracker
 
 DATA_DIR_PATH = Path.home() / "data"
@@ -18,5 +20,6 @@ __all__ = [
     "Model",
     "Movie",
     "SORTTracker",
+    "Track",
     "Tracker",
 ]

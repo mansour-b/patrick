@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from patrick import Annotation, Box, Frame, Keypoint
+from patrick.entities.annotation import Annotation, Box, Keypoint
+from patrick.entities.frame import Frame
 
 
 class Model(ABC):

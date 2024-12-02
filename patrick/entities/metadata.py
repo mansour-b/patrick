@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Self
+
+from typing_extensions import Self
 
 
 class Metadata(ABC):
