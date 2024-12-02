@@ -1,19 +1,22 @@
 from abc import ABC, abstractmethod
+from typing import Self
 
 
 class Metadata(ABC):
+    """Abstract class that represents metadata (frames, annotations, etc.)."""
 
     @staticmethod
     @abstractmethod
-    def printable_fields():
-        pass
+    def printable_fields() -> list[str]:
+        """List of the relevant fields to serialise the object."""
 
     @classmethod
     @abstractmethod
-    def from_dict(cls):
-        pass
+    def from_dict(cls, input_dict: dict) -> Self:
+        """Make object from a dictionary."""
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """Serialise object to a dictionary."""
         return {
             attribute: getattr(self, attribute) for attribute in self.printable_fields()
         }
