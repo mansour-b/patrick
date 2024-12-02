@@ -71,7 +71,7 @@ class Box(Annotation):
     def from_dict(cls, data_as_dict: dict) -> Self:
         """Make object from a dictionary."""
         init_params = {
-            k: data_as_dict[k] for k in ["label", "x", "y", "width", "height", "score"]
+            k: data_as_dict[k] for k in cls.printable_fields() if k != "type"
         }
         return cls(**init_params)
 
