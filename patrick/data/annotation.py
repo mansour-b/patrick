@@ -57,8 +57,10 @@ class Box(Annotation):
 
     @classmethod
     def from_dict(cls, data_as_dict):
-        init_params = {k:data_as_dict[k] for k in ["label", "x", "y", "width", "height"]}
-        output =  cls(**init_params)
+        init_params = {
+            k: data_as_dict[k] for k in ["label", "x", "y", "width", "height"]
+        }
+        output = cls(**init_params)
         if "score" in data_as_dict:
             output.score = data_as_dict["score"]
         return output
