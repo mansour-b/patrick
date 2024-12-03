@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 
 from typing_extensions import Self
@@ -6,23 +8,44 @@ from patrick.entities.metadata import Metadata
 
 
 class Annotation(Metadata):
+    """Abstract class to represent annotations and model predictions."""
+
     def __init__(self, label: str, score: float):
+        """Initialise the object.
+
+        Args:
+            label (str): Name of the object modelled by the annotation.
+            score (float): Confidence score for predictions (in [0, 1]).
+                For annotations, the score is 1.
+                For negative annotations (e.g., a caption saying that there is
+                no corresponding object in the image), the score is 0.
+
+        """
         self.label = label
         self.score = float(score)
 
     @abstractmethod
-    def rescale(self, w_ratio: float, h_ratio: float):
-        pass
+    def rescale(self, w_ratio: float, h_ratio: float) -> None:
+        """Rescale object.
+
+        Args:
+            w_ratio (float): Width ratio.
+            h_ratio (float): Height ratio.
+
+        """
 
     @property
     def type(self) -> str:
+        """Handle for annotation types (box, keypoint, track, ...)."""
         return type(self).__name__.lower()
 
     @classmethod
     def printable_fields(cls) -> list[str]:
+        """List of the relevant fields to serialise the object."""
         return ["label", "score"]
 
     def to_dict(self) -> dict:
+        """Serialise object to a dictionary."""
         output = super().to_dict()
         return {"type": self.type, **output}
 
@@ -145,6 +168,16 @@ class Keypoint(Annotation):
 
 
 class Track(Annotation):
-    def __init__(self, track_id: int, box_list: list[Box]):
+    """Class to represent object tracks accross frames in a movie."""
+
+    def __init__(self, track_id: int, box_list: list[tuple[int, Box]]):
+        """Initialise the track.
+
+        Args:
+            track_id (int): Identifier of the track.
+            box_list (list): List of tuples (frame_id, box) linking the frames
+                where the tracked object appears to its position in these frames.
+
+        """
         self.track_id = track_id
         self.box_list = box_list
