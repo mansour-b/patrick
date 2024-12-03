@@ -181,3 +181,12 @@ class Track(Annotation):
         """
         self.track_id = track_id
         self.box_list = box_list
+
+
+ANNOTATION_TYPE_DICT = {"box": Box, "keypoint": Keypoint, "track": Track}
+
+
+def annotation_dict_factory(annotation_as_dict: dict) -> Annotation:
+    annotation_type = annotation_as_dict["type"]
+    annotation_class = ANNOTATION_TYPE_DICT[annotation_type]
+    return annotation_class.from_dict(annotation_as_dict)

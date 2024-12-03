@@ -32,3 +32,6 @@ class Metadata(ABC):
         attribute_str = ",\n    ".join([f"{k}={v}" for k, v in printable_dict.items()])
         attribute_str += ","
         return f"{type(self).__name__}(\n    {attribute_str}\n)"
+
+    def __eq__(self, other: Self) -> bool:
+        return self.to_dict() == other.to_dict()
