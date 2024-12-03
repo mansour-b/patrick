@@ -90,3 +90,10 @@ class TestKeypoint:
             "point_list": [(0, 0), (1, 1)],
             "score": 1,
         }
+
+    def test_rescale(self):
+        keypoint = Keypoint(label="blob", point_list=[(1, 1), (2, 2)], score=1)
+        keypoint.rescale(w_ratio=2, h_ratio=3)
+        assert keypoint.label == "blob"
+        assert keypoint.point_list == [(2, 3), (4, 6)]
+        assert keypoint.score == 1

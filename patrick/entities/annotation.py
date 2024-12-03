@@ -119,7 +119,7 @@ class Keypoint(Annotation):
     def printable_fields(cls) -> list[str]:
         """List of the relevant fields to serialise the object."""
         output = super().printable_fields()
-        return [*output, "label", "point_list", "score"]
+        return [*output, "point_list"]
 
     @classmethod
     def from_dict(cls, data_as_dict: dict) -> Self:
