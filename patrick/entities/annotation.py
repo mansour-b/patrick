@@ -18,6 +18,10 @@ class Annotation(Metadata):
     def type(self) -> str:
         return type(self).__name__.lower()
 
+    @classmethod
+    def printable_fields(cls) -> list[str]:
+        return ["type", "label", "score"]
+
 
 class Box(Annotation):
     """Class to represent bounding boxes."""
@@ -62,10 +66,11 @@ class Box(Annotation):
         """Ymax for XYXY format."""
         return self.y + self.height
 
-    @staticmethod
-    def printable_fields() -> list[str]:
+    @classmethod
+    def printable_fields(cls) -> list[str]:
         """List of the relevant fields to serialise the object."""
-        return ["type", "label", "x", "y", "width", "height", "score"]
+        output = super().printable_fields()
+        return [*output, "x", "y", "width", "height"]
 
     @classmethod
     def from_dict(cls, data_as_dict: dict) -> Self:
@@ -108,12 +113,13 @@ class Keypoint(Annotation):
 
         """
         super().__init__(label, score)
-        self._point_list = [(float(coord[0]), float(coord[1])) for coord in point_list]
+        self.point_list = [(float(coord[0]), float(coord[1])) for coord in point_list]
 
-    @staticmethod
-    def printable_fields() -> list[str]:
+    @classmethod
+    def printable_fields(cls) -> list[str]:
         """List of the relevant fields to serialise the object."""
-        return ["label", "point_list", "score"]
+        output = super().printable_fields()
+        return [*output, "label", "point_list", "score"]
 
     @classmethod
     def from_dict(cls, data_as_dict: dict) -> Self:
@@ -131,10 +137,10 @@ class Keypoint(Annotation):
             h_ratio (float): Height ratio.
 
         """
-        self._point_list = [(x * w_ratio, y * h_ratio) for x, y in self._point_list]
+        self.point_list = [(x * w_ratio, y * h_ratio) for x, y in self.point_list]
 
 
 class Track(Annotation):
     def __init__(self, track_id: int, box_list: list[Box]):
         self.track_id = track_id
-        self.box_list = track_id
+        self.box_list = box_list

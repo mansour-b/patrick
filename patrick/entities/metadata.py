@@ -6,9 +6,9 @@ from typing_extensions import Self
 class Metadata(ABC):
     """Abstract class that represents metadata (frames, annotations, etc.)."""
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def printable_fields() -> list[str]:
+    def printable_fields(cls) -> list[str]:
         """List of the relevant fields to serialise the object."""
 
     @classmethod

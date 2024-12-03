@@ -1,4 +1,4 @@
-from patrick.entities.annotation import Box
+from patrick.entities.annotation import Box, Keypoint
 
 
 class TestBox:
@@ -60,3 +60,33 @@ class TestBox:
         assert box.width == 2
         assert box.height == 2
         assert box.score == 1
+
+
+class TestKeypoint:
+    def test_init(self):
+        keypoint = Keypoint(label="blob", point_list=[(0, 0), (1, 1)], score=1.0)
+        assert keypoint.label == "blob"
+        assert keypoint.point_list == [(0, 0), (1, 1)]
+        assert keypoint.score == 1
+
+    def test_from_dict(self):
+        keypoint_as_dict = {
+            "type": "keypoint",
+            "label": "blob",
+            "point_list": [(0, 0), (1, 1)],
+            "score": 1,
+        }
+        keypoint = Keypoint.from_dict(keypoint_as_dict)
+        assert keypoint.label == "blob"
+        assert keypoint.point_list == [(0, 0), (1, 1)]
+        assert keypoint.score == 1
+
+    def test_to_dict(self):
+        keypoint = Keypoint(label="blob", point_list=[(0, 0), (1, 1)], score=1)
+        keypoint_as_dict = keypoint.to_dict()
+        assert keypoint_as_dict == {
+            "type": "keypoint",
+            "label": "blob",
+            "point_list": [(0, 0), (1, 1)],
+            "score": 1,
+        }
