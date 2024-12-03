@@ -58,7 +58,7 @@ class TestBox:
         assert box.x == 2
         assert box.y == 3
         assert box.width == 2
-        assert box.height == 2
+        assert box.height == 3
         assert box.score == 1
 
     def test_repr(self):

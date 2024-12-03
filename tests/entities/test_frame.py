@@ -58,3 +58,24 @@ class TestFrame:
                 },
             ],
         }
+
+    def test_resize(self):
+        frame = Frame(
+            name="frame_0",
+            width=512,
+            height=512,
+            annotations=[
+                Box(label="blob", x=1, y=1, width=1, height=1, score=1),
+                Keypoint(label="blob", point_list=[(1, 1), (2, 2)], score=1),
+            ],
+        )
+        frame.resize(target_width=1024, target_height=1536)
+        assert frame == Frame(
+            name="frame_0",
+            width=1024,
+            height=1536,
+            annotations=[
+                Box(label="blob", x=2, y=3, width=2, height=3, score=1),
+                Keypoint(label="blob", point_list=[(2, 3), (4, 6)], score=1),
+            ],
+        )

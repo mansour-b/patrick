@@ -38,11 +38,11 @@ class Frame(Metadata):
         return output
 
     def resize(self, target_width: int, target_height: int) -> None:
-        w_ratio = target_width / self._width
-        h_ratio = target_height / self._height
+        w_ratio = target_width / self.width
+        h_ratio = target_height / self.height
 
-        self._width = target_width
-        self._height = target_height
+        self.width = target_width
+        self.height = target_height
 
-        for annotation in self._annotations:
+        for annotation in self.annotations:
             annotation.rescale(w_ratio, h_ratio)

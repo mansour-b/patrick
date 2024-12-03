@@ -118,7 +118,7 @@ class Box(Annotation):
         self.x = self.x * w_ratio
         self.y = self.y * h_ratio
         self.width = self.width * w_ratio
-        self.height = self.height * w_ratio
+        self.height = self.height * h_ratio
 
 
 class Keypoint(Annotation):
