@@ -23,9 +23,12 @@ class Metadata(ABC):
         }
 
     def __repr__(self):
-        attribute_str = ", ".join([f"{k}={v}" for k, v in self.to_dict().items()])
+        printable_dict = {attr: getattr(self, attr) for attr in self.printable_fields()}
+        attribute_str = ", ".join([f"{k}={v}" for k, v in printable_dict.items()])
         return f"{type(self).__name__}({attribute_str})"
 
     def __str__(self):
-        attribute_str = ",\n    ".join([f"{k}={v}" for k, v in self.to_dict().items()])
-        return f"{type(self).__name__}(\n    {attribute_str})"
+        printable_dict = {attr: getattr(self, attr) for attr in self.printable_fields()}
+        attribute_str = ",\n    ".join([f"{k}={v}" for k, v in printable_dict.items()])
+        attribute_str += ","
+        return f"{type(self).__name__}(\n    {attribute_str}\n)"

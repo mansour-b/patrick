@@ -61,6 +61,21 @@ class TestBox:
         assert box.height == 2
         assert box.score == 1
 
+    def test_str(self):
+        box = Box(label="blob", x=1, y=1, width=1, height=1, score=1)
+        assert str(box) == "\n".join(
+            [
+                "Box(",
+                "    label=blob,",
+                "    score=1.0,",
+                "    x=1.0,",
+                "    y=1.0,",
+                "    width=1.0,",
+                "    height=1.0,",
+                ")",
+            ]
+        )
+
 
 class TestKeypoint:
     def test_init(self):

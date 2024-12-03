@@ -8,7 +8,7 @@ from patrick.entities.metadata import Metadata
 class Annotation(Metadata):
     def __init__(self, label: str, score: float):
         self.label = label
-        self.score = score
+        self.score = float(score)
 
     @abstractmethod
     def rescale(self, w_ratio: float, h_ratio: float):
@@ -20,7 +20,11 @@ class Annotation(Metadata):
 
     @classmethod
     def printable_fields(cls) -> list[str]:
-        return ["type", "label", "score"]
+        return ["label", "score"]
+
+    def to_dict(self) -> dict:
+        output = super().to_dict()
+        return {"type": self.type, **output}
 
 
 class Box(Annotation):
