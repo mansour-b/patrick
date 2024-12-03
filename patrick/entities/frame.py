@@ -1,25 +1,39 @@
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from patrick.entities.annotation import Annotation, annotation_dict_factory
 from patrick.entities.metadata import Metadata
 
 
 class Frame(Metadata):
+    """Class to model movie frames or images."""
 
     def __init__(
         self, name: str, width: int, height: int, annotations: list[Annotation]
     ):
+        """Initialise the frame object.
+
+        Args:
+            name (str): Identifier of the frame. Can be an index, a file path, etc.
+            width (int): Width of the image.
+            height (int): Height of the image.
+            annotations (list): Annotations or detections associated with the image.
+
+        """
         self.name = name
         self.width = width
         self.height = height
         self.annotations = annotations
 
     @classmethod
-    def printable_fields(cls):
+    def printable_fields(cls) -> list[str]:
+        """List of the relevant fields to serialise the object."""
         return ["name", "width", "height", "annotations"]
 
     @classmethod
-    def from_dict(cls, data_as_dict: dict):
+    def from_dict(cls, data_as_dict: dict) -> Self:
+        """Make object from a dictionary."""
         return cls(
             name=data_as_dict["name"],
             width=data_as_dict["width"],
@@ -30,7 +44,8 @@ class Frame(Metadata):
             ],
         )
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """Serialise object to a dictionary."""
         output = super().to_dict()
         output["annotations"] = [
             annotation.to_dict() for annotation in self.annotations
@@ -38,6 +53,7 @@ class Frame(Metadata):
         return output
 
     def resize(self, target_width: int, target_height: int) -> None:
+        """Resize the image to (target_width, target_height)."""
         w_ratio = target_width / self.width
         h_ratio = target_height / self.height
 
