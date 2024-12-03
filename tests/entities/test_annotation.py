@@ -61,6 +61,18 @@ class TestBox:
         assert box.height == 2
         assert box.score == 1
 
+    def test_repr(self):
+        box = Box(label="blob", x=1, y=1, width=1, height=1, score=1)
+        assert (
+            repr(box) == "Box("
+            "label=blob, "
+            "score=1.0, "
+            "x=1.0, "
+            "y=1.0, "
+            "width=1.0, "
+            "height=1.0)"
+        )
+
     def test_str(self):
         box = Box(label="blob", x=1, y=1, width=1, height=1, score=1)
         assert str(box) == "\n".join(
@@ -112,3 +124,22 @@ class TestKeypoint:
         assert keypoint.label == "blob"
         assert keypoint.point_list == [(2, 3), (4, 6)]
         assert keypoint.score == 1
+
+    def test_repr(self):
+        keypoint = Keypoint(label="blob", point_list=[(0, 0), (1, 1)], score=1)
+        assert (
+            repr(keypoint)
+            == "Keypoint(label=blob, score=1.0, point_list=[(0.0, 0.0), (1.0, 1.0)])"
+        )
+
+    def test_str(self):
+        keypoint = Keypoint(label="blob", point_list=[(0, 0), (1, 1)], score=1)
+        assert str(keypoint) == "\n".join(
+            [
+                "Keypoint(",
+                "    label=blob,",
+                "    score=1.0,",
+                "    point_list=[(0.0, 0.0), (1.0, 1.0)],",
+                ")",
+            ]
+        )
