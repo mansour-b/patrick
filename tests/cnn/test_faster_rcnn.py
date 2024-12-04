@@ -4,6 +4,11 @@ from patrick import Box
 from patrick.cnn.faster_rcnn import FasterRCNNModel
 
 
+class MockNet:
+    def __call__(self, frame):
+        pass
+
+
 class TestFasterRCNN:
     @staticmethod
     def get_model():
@@ -39,7 +44,7 @@ class TestFasterRCNN:
             score=1,
         )
 
-    def test_convert_predictions(self):
+    def test_post_process(self):
         model = self.get_model()
         predictions = [
             {
@@ -48,6 +53,6 @@ class TestFasterRCNN:
                 "scores": torch.tensor([1.0], dtype=float),
             }
         ]
-        assert model.convert_predictions(predictions) == [
+        assert model.post_process(predictions) == [
             Box(label="blob", x=1, y=2, width=2, height=2, score=1)
         ]

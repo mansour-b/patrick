@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
+from patrick.entities.annotation import Annotation
 from patrick.entities.frame import Frame
 
 
@@ -9,8 +11,35 @@ class Model(ABC):
         pass
 
 
-class NNModel(Model):
+class NeuralNet(ABC):
     pass
+
+
+class Array(ABC):
+    pass
+
+
+class NNModel(Model):
+    net: NeuralNet
+
+    def predict(self, frame: Frame) -> Frame:
+        input_array = self.pre_process(frame)
+        predictions = self.net(input_array)
+        annotations = self.post_process(predictions)
+        return Frame(
+            name=frame.name,
+            width=frame.width,
+            height=frame.height,
+            annotations=annotations,
+        )
+
+    @abstractmethod
+    def pre_process(self, frame: Frame) -> Array:
+        pass
+
+    @abstractmethod
+    def post_process(self, net_predictions: Any) -> list[Annotation]:
+        pass
 
 
 class CDModel(Model):

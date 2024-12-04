@@ -5,8 +5,8 @@ from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 
-from patrick import Box
-from patrick.adapters.nn_model import TorchNNModel
+from patrick import Box, Frame
+from patrick.adapters.torch import TorchNNModel
 
 
 class FasterRCNNModel(TorchNNModel):
@@ -23,17 +23,10 @@ class FasterRCNNModel(TorchNNModel):
 
         self.net = self.get_net(num_classes=len(label_map) + 1)
 
-    @property
-    def reversed_label_map(self):
-        return {v: k for k, v in self.label_map.items()}
+    def pre_process(self, frame: Frame) -> torch.Tensor:
+        pass
 
-    def get_net(self, num_classes: int):
-        net = fasterrcnn_resnet50_fpn()
-        in_features = net.roi_heads.box_predictor.cls_score.in_features
-        net.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-        return net
-
-    def convert_predictions(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:
+    def post_process(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:
         predictions = predictions[0]
 
         kept_indices = nms(
@@ -56,6 +49,16 @@ class FasterRCNNModel(TorchNNModel):
             box_list.append(box)
         return box_list
 
+    @property
+    def reversed_label_map(self):
+        return {v: k for k, v in self.label_map.items()}
+
+    def get_net(self, num_classes: int):
+        net = fasterrcnn_resnet50_fpn()
+        in_features = net.roi_heads.box_predictor.cls_score.in_features
+        net.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+        return net
+
     def make_box_from_tensors(
         self,
         box_xyxy: torch.Tensor,
@@ -63,14 +66,8 @@ class FasterRCNNModel(TorchNNModel):
         score: torch.Tensor,
     ) -> Box:
         x, y, width, height = self.xyxy_to_xywh(*box_xyxy)
-        return Box(
-            label=self.reversed_label_map[int(label)],
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            score=score,
-        )
+        str_label = self.reversed_label_map[int(label)]
+        return Box(label=str_label, x=x, y=y, width=width, height=height, score=score)
 
     @staticmethod
     def xyxy_to_xywh(
