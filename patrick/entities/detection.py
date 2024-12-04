@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from patrick.entities.annotation import Annotation
+from patrick.entities.array import Array
 from patrick.entities.frame import Frame
 
 
@@ -12,10 +13,6 @@ class Model(ABC):
 
 
 class NeuralNet(ABC):
-    pass
-
-
-class Array(ABC):
     pass
 
 
@@ -31,6 +28,7 @@ class NNModel(Model):
             width=frame.width,
             height=frame.height,
             annotations=annotations,
+            image_array=frame.image_array,
         )
 
     @abstractmethod

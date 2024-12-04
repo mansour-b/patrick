@@ -1,19 +1,31 @@
+from __future__ import annotations
+
+import numpy as np
 import torch
 
-from patrick import Box
+from patrick import Box, Frame
 from patrick.cnn.faster_rcnn import FasterRCNNModel
 
 
 class MockNet:
-    def __call__(self, frame):
-        pass
+    def __call__(self, frame: Frame) -> list[dict[torch.Tensor]]:
+        return [
+            {
+                "boxes": torch.tensor([[1, 2, 3, 4]], dtype=float),
+                "labels": torch.tensor([1], dtype=int),
+                "scores": torch.tensor([1.0], dtype=float),
+            }
+        ]
 
 
 class TestFasterRCNN:
     @staticmethod
     def get_model():
         return FasterRCNNModel(
-            label_map={"blob": 1}, nms_iou_threshold=0.2, score_threshold=0.7
+            label_map={"blob": 1},
+            nms_iou_threshold=0.2,
+            score_threshold=0.7,
+            device=torch.device("cpu"),
         )
 
     def test_init(self):
@@ -44,6 +56,18 @@ class TestFasterRCNN:
             score=1,
         )
 
+    def test_pre_process(self):
+        model = self.get_model()
+        frame = Frame(
+            name="frame_0",
+            width=32,
+            height=32,
+            annotations=[],
+            image_array=np.zeros((32, 32)),
+        )
+        input_array = model.pre_process(frame)
+        assert torch.equal(input_array, torch.zeros(1, 3, 32, 32))
+
     def test_post_process(self):
         model = self.get_model()
         predictions = [
@@ -56,3 +80,21 @@ class TestFasterRCNN:
         assert model.post_process(predictions) == [
             Box(label="blob", x=1, y=2, width=2, height=2, score=1)
         ]
+
+    def test_predict(self):
+        model = self.get_model()
+        model.net = MockNet()
+        frame = Frame(
+            name="frame_0",
+            width=32,
+            height=32,
+            annotations=[],
+            image_array=np.zeros((32, 32)),
+        )
+        output_frame = model.predict(frame)
+        assert output_frame == Frame(
+            name="frame_0",
+            width=32,
+            height=32,
+            annotations=[Box(label="blob", x=1, y=2, width=2, height=2, score=1)],
+        )

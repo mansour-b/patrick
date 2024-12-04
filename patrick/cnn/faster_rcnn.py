@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numpy as np
 import torch
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
@@ -16,15 +17,24 @@ class FasterRCNNModel(TorchNNModel):
         label_map: dict[str, int],
         nms_iou_threshold: float,
         score_threshold: float,
+        device: torch.device,
     ):
         self.label_map = label_map
         self.nms_iou_threshold = nms_iou_threshold
         self.score_threshold = score_threshold
+        self.device = device
 
         self.net = self.get_net(num_classes=len(label_map) + 1)
 
     def pre_process(self, frame: Frame) -> torch.Tensor:
-        pass
+        input_array = np.expand_dims(frame.image_array, axis=0)
+        input_array = np.repeat(input_array, repeats=3, axis=0)
+
+        input_array = np.expand_dims(input_array, axis=0)
+
+        input_array = torch.as_tensor(input_array)
+        input_array.to(self.device)
+        return input_array
 
     def post_process(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:
         predictions = predictions[0]

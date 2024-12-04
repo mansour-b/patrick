@@ -1,16 +1,26 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from typing_extensions import Self
 
 from patrick.entities.annotation import Annotation, annotation_dict_factory
 from patrick.entities.metadata import Metadata
+
+if TYPE_CHECKING:
+    from patrick.entities.array import Array
 
 
 class Frame(Metadata):
     """Class to model movie frames or images."""
 
     def __init__(
-        self, name: str, width: int, height: int, annotations: list[Annotation]
+        self,
+        name: str,
+        width: int,
+        height: int,
+        annotations: list[Annotation],
+        image_array: Array = None,
     ):
         """Initialise the frame object.
 
@@ -19,12 +29,14 @@ class Frame(Metadata):
             width (int): Width of the image.
             height (int): Height of the image.
             annotations (list): Annotations or detections associated with the image.
+            image_array (Array): 2D image corresponding to the frame
 
         """
         self.name = name
         self.width = width
         self.height = height
         self.annotations = annotations
+        self.image_array = image_array
 
     @classmethod
     def printable_fields(cls) -> list[str]:
