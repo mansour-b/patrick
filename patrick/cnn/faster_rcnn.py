@@ -7,19 +7,19 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 
 from patrick import Box, Frame
-from patrick.adapters.torch import TorchNNModel
+from patrick.entities.detection import NNModel
 
 
-class FasterRCNNModel(TorchNNModel):
+class FasterRCNNModel(NNModel):
 
     def __init__(
         self,
         label_map: dict[str, int],
-        nms_iou_threshold: float,
-        score_threshold: float,
+        post_processing_parameters: dict,
         device: torch.device,
     ):
         self.label_map = label_map
+
         self.nms_iou_threshold = nms_iou_threshold
         self.score_threshold = score_threshold
         self.device = device
