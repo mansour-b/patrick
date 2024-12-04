@@ -5,21 +5,28 @@ from patrick.cnn.faster_rcnn import FasterRCNNModel
 
 
 class TestFasterRCNN:
+    @staticmethod
+    def get_model():
+        return FasterRCNNModel(
+            label_map={"blob": 1}, nms_iou_threshold=0.2, score_threshold=0.7
+        )
 
     def test_init(self):
-        model = FasterRCNNModel({"blob": 1})
+        model = self.get_model()
         assert model.label_map == {"blob": 1}
+        assert model.nms_iou_threshold == 0.2
+        assert model.score_threshold == 0.7
 
     def test_reversed_label_map(self):
-        model = FasterRCNNModel({"blob": 1})
+        model = self.get_model()
         assert model.reversed_label_map == {1: "blob"}
 
     def test_xyxy_to_xywh(self):
-        model = FasterRCNNModel({"blob": 1})
+        model = self.get_model()
         assert model.xyxy_to_xywh(1, 2, 3, 4) == (1, 2, 2, 2)
 
     def test_make_box_from_tensors(self):
-        model = FasterRCNNModel({"blob": 1})
+        model = self.get_model()
         box_xyxy = torch.tensor([1, 2, 3, 4])
         label = torch.tensor(1)
         score = torch.tensor(1.0)
@@ -31,3 +38,16 @@ class TestFasterRCNN:
             height=2,
             score=1,
         )
+
+    def test_convert_predictions(self):
+        model = self.get_model()
+        predictions = [
+            {
+                "boxes": torch.tensor([[1, 2, 3, 4]], dtype=float),
+                "labels": torch.tensor([1], dtype=int),
+                "scores": torch.tensor([1.0], dtype=float),
+            }
+        ]
+        assert model.convert_predictions(predictions) == [
+            Box(label="blob", x=1, y=2, width=2, height=2, score=1)
+        ]

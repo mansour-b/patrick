@@ -11,8 +11,16 @@ from patrick.adapters.nn_model import TorchNNModel
 
 class FasterRCNNModel(TorchNNModel):
 
-    def __init__(self, label_map: dict[str, int]):
+    def __init__(
+        self,
+        label_map: dict[str, int],
+        nms_iou_threshold: float,
+        score_threshold: float,
+    ):
         self.label_map = label_map
+        self.nms_iou_threshold = nms_iou_threshold
+        self.score_threshold = score_threshold
+
         self.net = self.get_net(num_classes=len(label_map) + 1)
 
     @property
@@ -25,7 +33,7 @@ class FasterRCNNModel(TorchNNModel):
         net.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
         return net
 
-    def convert_predictions(self, predictions: torch.Tensor) -> list[Box]:
+    def convert_predictions(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:
         predictions = predictions[0]
 
         kept_indices = nms(
@@ -44,7 +52,7 @@ class FasterRCNNModel(TorchNNModel):
         ):
             if score < self.score_threshold:
                 continue
-            box = self.make_box_from_tensors(box_xyxy, label, score, label_map)
+            box = self.make_box_from_tensors(box_xyxy, label, score)
             box_list.append(box)
         return box_list
 
