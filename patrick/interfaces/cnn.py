@@ -12,7 +12,7 @@ class NetRepository(ABC):
         self._framework = framework
 
     @abstractmethod
-    def get_weights(model_name: str) -> Any:
+    def read(model_name: str) -> Any:
         pass
 
 
@@ -28,7 +28,7 @@ class NetBuilder(ABC):
     @abstractmethod
     def build(self, model_name: str) -> NeuralNet:
         net = self._define_architecture(model_name)
-        weights = self._net_repository.get_weights(model_name)
+        weights = self._net_repository.read(model_name)
         self._load_weights(net, weights)
         self._migrate_on_computing_device(net)
         return net

@@ -1,0 +1,62 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+import torch
+import yaml
+
+from patrick import PATRICK_DIR_PATH, NNModel
+from patrick.core.entities.detection import NeuralNet
+from patrick.interfaces import NetBuilder
+
+
+class LocalRepository:
+    def __init__(self, name: str):
+        self._name = name
+        self._directory_path = PATRICK_DIR_PATH / name
+
+
+class LocalTorchNetRepository(LocalRepository):
+    def read(self, content_path: str or Path) -> Any:
+        full_content_path = self._directory_path / content_path
+        return torch.load(full_content_path)
+
+    def write(self, content_path: str or Path, content: Any) -> None:
+        full_content_path = self._directory_path / content_path
+        torch.save(content, full_content_path)
+
+
+class LocalModelRepository(LocalRepository):
+    _net_builder: NetBuilder
+
+    def __init__(self, name: str):
+        super().__init__(name)
+
+    def read(self, content_path: str or Path) -> dict[str, dict or Any]:
+        label_map = self._load_label_map(content_path)
+        model_parameters = self._load_model_parameters(content_path)
+        net = self._load_net(content_path)
+        return {
+            "label_map": label_map,
+            "model_parameters": model_parameters,
+            "net": net,
+        }
+
+    def write(self, content_path: str or Path, content: NNModel) -> None:
+        pass
+
+    def _load_label_map(self, content_path: str or Path) -> dict[str, int]:
+        full_content_path = self._directory_path / content_path / "label_map.yaml"
+        with Path.open(full_content_path) as f:
+            return yaml.safe_load(f)
+
+    def _load_model_parameters(self, content_path: str or Path) -> dict[str, dict]:
+        full_content_path = (
+            self._directory_path / content_path / "model_parameters.yaml"
+        )
+        with Path.open(full_content_path) as f:
+            return yaml.safe_load(f)
+
+    def _load_net(self, content_path: str or Path) -> NeuralNet:
+        self._net_builder.build(model_name=content_path.name)
