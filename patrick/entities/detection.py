@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable
+from typing import Any
 
 from patrick.entities.annotation import Annotation
 from patrick.entities.array import Array
@@ -14,21 +14,23 @@ class Model(ABC):
         pass
 
 
+class NeuralNet:
+    @abstractmethod
+    def __call__(self, input_array: Array) -> Any:
+        pass
+
+
 class NNModel(Model):
 
     def __init__(
         self,
-        net_path: Path,
+        net: NeuralNet,
         label_map: dict[str, int],
         post_processing_parameters: dict,
     ):
-        self.net = self.get_net(net_path)
+        self.net = net
         self.label_map = label_map
         self.post_processing_parameters = post_processing_parameters
-
-    @abstractmethod
-    def get_net(self, net_path: Path) -> Callable[[Array], Any]:
-        pass
 
     def predict(self, frame: Frame) -> Frame:
         input_array = self.pre_process(frame)
