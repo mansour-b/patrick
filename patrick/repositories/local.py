@@ -8,10 +8,11 @@ import yaml
 
 from patrick import PATRICK_DIR_PATH, NNModel
 from patrick.core.entities.detection import NeuralNet
-from patrick.interfaces import NetBuilder
+from patrick.interface.repository import Repository
+from patrick.interfaces.builder import Builder
 
 
-class LocalRepository:
+class LocalRepository(Repository):
     def __init__(self, name: str):
         self._name = name
         self._directory_path = PATRICK_DIR_PATH / name
@@ -28,7 +29,7 @@ class LocalTorchNetRepository(LocalRepository):
 
 
 class LocalModelRepository(LocalRepository):
-    _net_builder: NetBuilder
+    _net_builder: Builder
 
     def __init__(self, name: str):
         super().__init__(name)
