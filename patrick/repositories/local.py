@@ -13,12 +13,17 @@ from patrick.interfaces.builder import Builder
 
 
 class LocalRepository(Repository):
-    def __init__(self, name: str):
-        self._name = name
-        self._directory_path = PATRICK_DIR_PATH / name
+    data_source = "local"
+    name: str
+
+    def __init__(self):
+        self._directory_path = PATRICK_DIR_PATH / self.name
 
 
 class LocalTorchNetRepository(LocalRepository):
+    data_source = "local"
+    name = "models"
+
     def read(self, content_path: str or Path) -> Any:
         full_content_path = self._directory_path / content_path
         return torch.load(full_content_path)
@@ -29,10 +34,9 @@ class LocalTorchNetRepository(LocalRepository):
 
 
 class LocalModelRepository(LocalRepository):
+    data_source = "local"
+    name = "models"
     _net_builder: Builder
-
-    def __init__(self, name: str):
-        super().__init__(name)
 
     def read(self, content_path: str or Path) -> dict[str, dict or Any]:
         label_map = self._load_label_map(content_path)

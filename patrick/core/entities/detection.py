@@ -26,11 +26,11 @@ class NNModel(Model):
         self,
         net: NeuralNet,
         label_map: dict[str, int],
-        post_processing_parameters: dict,
+        model_parameters: dict,
     ):
         self.net = net
         self.label_map = label_map
-        self.post_processing_parameters = post_processing_parameters
+        self.model_parameters = model_parameters
 
     def predict(self, frame: Frame) -> Frame:
         input_array = self.pre_process(frame)

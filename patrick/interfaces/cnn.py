@@ -1,31 +1,16 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Any
 
 from patrick.entities import NeuralNet
-from patrick.value_objects import ComputingDevice, DataSource, Framework
+from patrick.interfaces.repository import Builder, Repository
+from patrick.value_objects import ComputingDevice
 
 
-class NetRepository(ABC):
-    def __init__(self, data_source: DataSource, framework: Framework):
-
-        self._data_source = data_source
-        self._framework = framework
-
-    @abstractmethod
-    def read(model_name: str) -> Any:
-        pass
-
-
-class NetBuilder(ABC):
-    def __init__(
-        self, data_source: DataSource, framework: Framework, device: ComputingDevice
-    ):
-        self._net_repository = NetRepository(
-            data_source=data_source, framework=framework
-        )
+class NetBuilder(Builder):
+    def __init__(self, device: ComputingDevice, net_repository: Repository):
+        self._net_repository = net_repository
         self._device = device
 
-    @abstractmethod
     def build(self, model_name: str) -> NeuralNet:
         net = self._define_architecture(model_name)
         weights = self._net_repository.read(model_name)
