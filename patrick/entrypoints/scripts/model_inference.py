@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
-
-from patrick.entities import Model
-from patrick.entities.value_objects import ComputingDevice, DataSource, Framework
+from patrick.core import Model, Movie
+from patrick.core.value_objects import ComputingDevice, DataSource, Framework
 from patrick.interfaces.cnn import NetBuilder
 from patrick.interfaces.model import ModelBuilder
 from patrick.interfaces.repository import Repository
@@ -39,32 +37,34 @@ def load_model(
     return model_builder.build()
 
 
-def load_movie():
+def load_movie(movie_name: str, data_source: DataSource) -> Movie:
     pass
 
 
-def compute_predictions():
+def compute_predictions(model: Model, movie: Movie) -> Movie:
     pass
 
 
-def save_movie():
+def save_movie(movie: Movie) -> None:
     pass
 
 
 if __name__ == "__main__":
+
     movie_name = "blob"
-
     model_name = "model_architecture_yymmdd_HHMMSS"
-
     data_source = "local"
-
     framework = "torch"
-
     computing_device = "gpu"
 
-    model = load_model(model_name)
+    model = load_model(
+        model_name=model_name,
+        data_source=data_source,
+        framework=framework,
+        device=computing_device,
+    )
 
-    movie = load_movie(movie_name)
+    movie = load_movie(movie_name=movie_name, data_source=data_source)
 
     analysed_movie = compute_predictions(model, movie)
 
