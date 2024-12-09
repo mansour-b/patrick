@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
-from patrick.entities.annotation import Annotation, annotation_dict_factory
-from patrick.entities.metadata import Metadata
+from patrick.core.entities.annotation import Annotation, annotation_dict_factory
+from patrick.core.entities.metadata import Metadata
 
 if TYPE_CHECKING:
-    from patrick.entities.array import Array
+    from patrick.core.entities.array import Array
 
 
 class Frame(Metadata):

@@ -6,8 +6,7 @@ from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 
-from patrick import Box, Frame
-from patrick.entities.detection import NNModel
+from patrick.core import Box, Frame, NNModel
 
 
 class FasterRCNNModel(NNModel):

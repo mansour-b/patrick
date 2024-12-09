@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from patrick.entities import CDModel, Model, NNModel
+from patrick.core import CDModel, Model, NNModel
 from patrick.interfaces.builder import Builder
 from patrick.interfaces.repository import Repository
 

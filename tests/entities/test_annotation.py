@@ -1,4 +1,4 @@
-from patrick.entities.annotation import Box, Keypoint
+from patrick.core.entities.annotation import Box, Keypoint
 
 
 class TestBox:

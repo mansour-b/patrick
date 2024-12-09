@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 from typing_extensions import Self
 
-from patrick.entities.metadata import Metadata
+from patrick.core.metadata import Metadata
 
 
 class Annotation(Metadata):

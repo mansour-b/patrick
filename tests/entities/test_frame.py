@@ -1,5 +1,5 @@
-from patrick.entities.annotation import Box, Keypoint
-from patrick.entities.frame import Frame
+from patrick.core.entities.annotation import Box, Keypoint
+from patrick.core.entities.frame import Frame
 
 
 class TestFrame:

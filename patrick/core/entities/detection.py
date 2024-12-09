@@ -3,9 +3,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from patrick.entities.annotation import Annotation
-from patrick.entities.array import Array
-from patrick.entities.frame import Frame
+from patrick.core.entities.annotation import Annotation
+from patrick.core.entities.array import Array
+from patrick.core.entities.frame import Frame
 
 
 class Model(ABC):

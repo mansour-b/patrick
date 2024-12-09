@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Any
 
-from patrick.entities import NeuralNet
+from patrick.core import NeuralNet
 from patrick.interfaces.repository import Builder, Repository
 from patrick.value_objects import ComputingDevice
 

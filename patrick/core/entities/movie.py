@@ -1,6 +1,6 @@
-from patrick.entities.annotation import Track
-from patrick.entities.frame import Frame
-from patrick.entities.metadata import Metadata
+from patrick.core.entities.annotation import Track
+from patrick.core.entities.frame import Frame
+from patrick.core.entities.metadata import Metadata
 
 
 class Movie(Metadata):
