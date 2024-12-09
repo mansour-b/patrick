@@ -1,2 +1,2 @@
-# PATteRn dIsCovey for toKam2d (PATRICK)
+# PATteRn dIsCovey for Kit (PATRICK)
 
