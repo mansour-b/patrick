@@ -7,6 +7,7 @@ import torch
 import yaml
 
 from patrick import PATRICK_DIR_PATH, NNModel
+from patrick.core import Movie
 from patrick.core.entities.detection import NeuralNet
 from patrick.interface.repository import Repository
 from patrick.interfaces.builder import Builder
@@ -65,3 +66,14 @@ class LocalModelRepository(LocalRepository):
 
     def _load_net(self, content_path: str or Path) -> NeuralNet:
         self._net_builder.build(model_name=content_path.name)
+
+
+class LocalInputMovieRepository(LocalRepository):
+    data_source = "local"
+    name = "input"
+
+    def read(self, content_path: str or Path) -> Movie:
+        pass
+
+    def write(self, content_path: str or Path, content: Movie) -> None:
+        pass

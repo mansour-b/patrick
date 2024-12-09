@@ -5,7 +5,11 @@ from patrick.core.value_objects import ComputingDevice, DataSource, Framework
 from patrick.interfaces.cnn import NetBuilder
 from patrick.interfaces.model import ModelBuilder
 from patrick.interfaces.repository import Repository
-from patrick.repositories.local import LocalModelRepository, LocalTorchNetRepository
+from patrick.repositories.local import (
+    LocalInputMovieRepository,
+    LocalModelRepository,
+    LocalTorchNetRepository,
+)
 
 
 def model_repository_factory(data_source: DataSource) -> Repository:
@@ -17,6 +21,11 @@ def net_repository_factory(data_source: DataSource, framework: Framework) -> Rep
     class_dict = {"local": {"torch": LocalTorchNetRepository}}
     concrete_class = class_dict[data_source][framework]
     return concrete_class()
+
+
+def movie_repository_factory(data_source: DataSource) -> Repository:
+    class_dict = {"local": LocalInputMovieRepository}
+    return class_dict[data_source]()
 
 
 def load_model(
@@ -38,15 +47,17 @@ def load_model(
 
 
 def load_movie(movie_name: str, data_source: DataSource) -> Movie:
-    pass
+    movie_repository = movie_repository_factory(data_source)
+    return movie_repository.read(movie_name)
 
 
 def compute_predictions(model: Model, movie: Movie) -> Movie:
     pass
 
 
-def save_movie(movie: Movie) -> None:
-    pass
+def save_movie(movie: Movie, data_source: DataSource) -> None:
+    movie_repository = movie_repository_factory(data_source)
+    movie_repository.write(movie_name, movie)
 
 
 if __name__ == "__main__":
