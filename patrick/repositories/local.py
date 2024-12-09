@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -68,12 +69,19 @@ class LocalModelRepository(LocalRepository):
         self._net_builder.build(model_name=content_path.name)
 
 
-class LocalInputMovieRepository(LocalRepository):
+class LocalMovieRepository(LocalRepository):
     data_source = "local"
-    name = "input"
+    name: str
 
     def read(self, content_path: str or Path) -> Movie:
-        pass
+        full_content_path = self._directory_path / content_path
+
+        with Path.open(full_content_path) as f:
+            movie_as_dict = json.load(f)
+
+        return Movie.from_dict(movie_as_dict)
 
     def write(self, content_path: str or Path, content: Movie) -> None:
-        pass
+        full_content_path = self._directory_path / content_path
+        with Path.open(full_content_path, "w") as f:
+            json.dump(content, f, indent=2)

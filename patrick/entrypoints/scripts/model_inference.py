@@ -6,8 +6,8 @@ from patrick.interfaces.cnn import NetBuilder
 from patrick.interfaces.model import ModelBuilder
 from patrick.interfaces.repository import Repository
 from patrick.repositories.local import (
-    LocalInputMovieRepository,
     LocalModelRepository,
+    LocalMovieRepository,
     LocalTorchNetRepository,
 )
 
@@ -23,9 +23,11 @@ def net_repository_factory(data_source: DataSource, framework: Framework) -> Rep
     return concrete_class()
 
 
-def movie_repository_factory(data_source: DataSource) -> Repository:
-    class_dict = {"local": LocalInputMovieRepository}
-    return class_dict[data_source]()
+def movie_repository_factory(data_source: DataSource, name: str) -> Repository:
+    class_dict = {"local": LocalMovieRepository}
+    repository = class_dict[data_source]()
+    repository.name = name
+    return repository
 
 
 def load_model(
@@ -47,16 +49,17 @@ def load_model(
 
 
 def load_movie(movie_name: str, data_source: DataSource) -> Movie:
-    movie_repository = movie_repository_factory(data_source)
+    movie_repository = movie_repository_factory(data_source, "input")
     return movie_repository.read(movie_name)
 
 
 def compute_predictions(model: Model, movie: Movie) -> Movie:
-    pass
+    predicted_frames = [model.predict(frame) for frame in movie.frames]
+    return Movie(name=movie.name, frames=predicted_frames, tracks=[])
 
 
 def save_movie(movie: Movie, data_source: DataSource) -> None:
-    movie_repository = movie_repository_factory(data_source)
+    movie_repository = movie_repository_factory(data_source, "output")
     movie_repository.write(movie_name, movie)
 
 
@@ -79,4 +82,4 @@ if __name__ == "__main__":
 
     analysed_movie = compute_predictions(model, movie)
 
-    save_movie(analysed_movie)
+    save_movie(analysed_movie, data_source=data_source)
