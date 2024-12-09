@@ -7,11 +7,11 @@ from typing import Any
 import torch
 import yaml
 
-from patrick import PATRICK_DIR_PATH, NNModel
-from patrick.core import Movie
-from patrick.core.entities.detection import NeuralNet
-from patrick.interface.repository import Repository
-from patrick.interfaces.builder import Builder
+from patrick.core import Movie, NeuralNet, NNModel
+from patrick.interfaces import Builder, Repository
+
+DATA_DIR_PATH = Path.home() / "data"
+PATRICK_DIR_PATH = DATA_DIR_PATH / "pattern_discovery"
 
 
 class LocalRepository(Repository):

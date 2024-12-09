@@ -1,9 +1,9 @@
 from abc import abstractmethod
 from typing import Any
 
-from patrick.core import NeuralNet
-from patrick.interfaces.repository import Builder, Repository
-from patrick.value_objects import ComputingDevice
+from patrick.core import ComputingDevice, NeuralNet
+from patrick.interfaces.builder import Builder
+from patrick.interfaces.repository import Repository
 
 
 class NetBuilder(Builder):
