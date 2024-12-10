@@ -8,8 +8,8 @@ from patrick.interfaces.repository import Repository
 
 
 def parse_model_name(model_name: str) -> dict[str, Any]:
-    model_architecture = model_name.split("_")[:-2]
-    model_date = model_name.split("_")[-2:]
+    model_architecture = "_".join(model_name.split("_")[:-2])
+    model_date = "_".join(model_name.split("_")[-2:])
     model_type = "cnn" if "cnn" in model_architecture else "cdl"
     return {"architecture": model_architecture, "date": model_date, "type": model_type}
 
