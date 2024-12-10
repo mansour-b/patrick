@@ -7,7 +7,7 @@ from typing import Any
 import torch
 import yaml
 
-from patrick.core import Movie, NeuralNet, NNModel
+from patrick.core import ComputingDevice, Movie, NeuralNet, NNModel
 from patrick.interfaces import Builder, Repository
 
 DATA_DIR_PATH = Path.home() / "data"
@@ -26,13 +26,29 @@ class LocalTorchNetRepository(LocalRepository):
     data_source = "local"
     name = "models"
 
-    def read(self, content_path: str or Path) -> Any:
+    def __init__(self, device: ComputingDevice):
+        super().__init__()
+        self._device = device
+
+    def read(self, content_path: str or Path) -> dict[str, Any]:
         full_content_path = self._directory_path / content_path
-        return torch.load(full_content_path)
+        with Path.open(full_content_path / "model_parameters.yaml") as f:
+            net_parameters = yaml.safe_load(f)["net"]
+        return {
+            "weights": torch.load(
+                full_content_path / "net.pth", map_location=self._concrete_device
+            ),
+            "net_parameters": net_parameters,
+        }
 
     def write(self, content_path: str or Path, content: Any) -> None:
         full_content_path = self._directory_path / content_path
         torch.save(content, full_content_path)
+
+    @property
+    def _concrete_device(self) -> torch.DeviceObjType:
+        torch_device_dict = {"cpu": torch.device("cpu"), "gpu": torch.device("cuda")}
+        return torch_device_dict[self._device]
 
 
 class LocalModelRepository(LocalRepository):
@@ -66,7 +82,7 @@ class LocalModelRepository(LocalRepository):
             return yaml.safe_load(f)
 
     def _load_net(self, content_path: str or Path) -> NeuralNet:
-        self._net_builder.build(model_name=content_path.name)
+        self._net_builder.build(model_name=content_path)
 
 
 class LocalMovieRepository(LocalRepository):

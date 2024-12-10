@@ -17,7 +17,7 @@ def parse_model_name(model_name: str) -> dict[str, Any]:
 class ModelBuilder(Builder):
 
     def __init__(self, model_name: str, model_repository: Repository):
-        self._model_name
+        self._model_name = model_name
         self._model_type = parse_model_name(model_name)["type"]
         self._model_repository = model_repository
         self._concrete_model_class = {"cnn": NNModel, "cdl": CDModel}[self._model_type]

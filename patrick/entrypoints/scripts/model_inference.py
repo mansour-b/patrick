@@ -17,10 +17,12 @@ def model_repository_factory(data_source: DataSource) -> Repository:
     return class_dict[data_source]()
 
 
-def net_repository_factory(data_source: DataSource, framework: Framework) -> Repository:
+def net_repository_factory(
+    data_source: DataSource, framework: Framework, device: ComputingDevice
+) -> Repository:
     class_dict = {"local": {"torch": LocalTorchNetRepository}}
     concrete_class = class_dict[data_source][framework]
-    return concrete_class()
+    return concrete_class(device)
 
 
 def movie_repository_factory(data_source: DataSource, name: str) -> Repository:
@@ -31,12 +33,12 @@ def movie_repository_factory(data_source: DataSource, name: str) -> Repository:
 
 
 def net_builder_factory(
-    data_source: DataSource,
     framework: Framework,
     device: ComputingDevice,
     net_repository: Repository,
 ) -> NetBuilder:
-    class_dict = {"local": {"torch": {"gpu"}}}
+    class_dict = {"torch": TorchNetBuilder}
+    return class_dict[framework](device, net_repository)
 
 
 def load_model(
@@ -46,8 +48,8 @@ def load_model(
     device: ComputingDevice,
 ) -> Model:
 
-    net_repository = net_repository_factory(data_source, framework)
-    net_builder = NetBuilder(device, net_repository)
+    net_repository = net_repository_factory(data_source, framework, device)
+    net_builder = net_builder_factory(framework, device, net_repository)
 
     model_repository = model_repository_factory(data_source)
     model_repository._net_builder = net_builder
@@ -75,10 +77,10 @@ def save_movie(movie: Movie, data_source: DataSource) -> None:
 if __name__ == "__main__":
 
     movie_name = "blob"
-    model_name = "model_architecture_yymmdd_HHMMSS"
+    model_name = "faster_rcnn_241113_131447"
     data_source = "local"
     framework = "torch"
-    computing_device = "gpu"
+    computing_device = "cpu"
 
     model = load_model(
         model_name=model_name,
