@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from patrick.core import Model, Movie
 from patrick.core.value_objects import ComputingDevice, DataSource, Framework
-from patrick.interfaces.cnn import NetBuilder
+from patrick.interfaces.cnn import NetBuilder, TorchNetBuilder
 from patrick.interfaces.model import ModelBuilder
 from patrick.interfaces.repository import Repository
 from patrick.repositories.local import (
@@ -28,6 +28,15 @@ def movie_repository_factory(data_source: DataSource, name: str) -> Repository:
     repository = class_dict[data_source]()
     repository.name = name
     return repository
+
+
+def net_builder_factory(
+    data_source: DataSource,
+    framework: Framework,
+    device: ComputingDevice,
+    net_repository: Repository,
+) -> NetBuilder:
+    class_dict = {"local": {"torch": {"gpu"}}}
 
 
 def load_model(

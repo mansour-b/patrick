@@ -23,8 +23,6 @@ class FasterRCNNModel(NNModel):
         self.score_threshold = score_threshold
         self.device = device
 
-        self.net = self.get_net(num_classes=len(label_map) + 1)
-
     def pre_process(self, frame: Frame) -> torch.Tensor:
         input_array = np.expand_dims(frame.image_array, axis=0)
         input_array = np.repeat(input_array, repeats=3, axis=0)
@@ -61,12 +59,6 @@ class FasterRCNNModel(NNModel):
     @property
     def reversed_label_map(self):
         return {v: k for k, v in self.label_map.items()}
-
-    def get_net(self, num_classes: int):
-        net = fasterrcnn_resnet50_fpn()
-        in_features = net.roi_heads.box_predictor.cls_score.in_features
-        net.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-        return net
 
     def make_box_from_tensors(
         self,
