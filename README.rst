@@ -1,6 +1,9 @@
 PATteRn dIsCovey for Kit (PATRICK)
 ----------------------------------
 
+Welcome to the Pattern Discovery Kit!
+
+This library provides tools to discover, detect, and track meaningful patterns in physical signals.
 
 Installation
 ------------
