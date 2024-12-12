@@ -122,4 +122,3 @@ class LocalMovieRepository(LocalRepository):
             self._directory_path / f"input/{experiment}/{field}_frame_{frame_id}.txt"
         )
         frame.image_array = np.loadtxt(image_array_path)
-        frame.image_array = np.loadtxt(image_array_path)
