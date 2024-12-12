@@ -47,7 +47,7 @@ class FasterRCNNModel(NNModel):
             predictions["labels"],
             predictions["scores"],
         ):
-            if score < self.score_threshold:
+            if score < self.post_proc_params["score_threshold"]:
                 continue
             box = self.make_box_from_tensors(box_xyxy, label, score)
             box_list.append(box)

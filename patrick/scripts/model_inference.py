@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tqdm import tqdm
+
 from patrick.core import Model, Movie
 from patrick.core.value_objects import ComputingDevice, DataSource, Framework
 from patrick.interfaces.cnn import NetBuilder, TorchNetBuilder
@@ -64,7 +66,7 @@ def load_movie(movie_name: str, data_source: DataSource) -> Movie:
 
 
 def compute_predictions(model: Model, movie: Movie) -> Movie:
-    predicted_frames = [model.predict(frame) for frame in movie.frames]
+    predicted_frames = [model.predict(frame) for frame in tqdm(movie.frames)]
     return Movie(name=movie.name, frames=predicted_frames, tracks=[])
 
 
