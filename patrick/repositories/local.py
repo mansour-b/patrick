@@ -61,6 +61,7 @@ class LocalModelRepository(LocalRepository):
         label_map = self._load_label_map(content_path)
         model_parameters = self._load_model_parameters(content_path)
         net = self._load_net(content_path)
+        net.eval()
         return {
             "label_map": label_map,
             "model_parameters": model_parameters,

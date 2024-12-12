@@ -28,8 +28,7 @@ class FasterRCNNModel(NNModel):
         input_array = np.expand_dims(input_array, axis=0)
 
         input_array = torch.as_tensor(input_array)
-        input_array.to(self._device)
-        return input_array
+        return input_array.to(torch.float32).to(self._device)
 
     def post_process(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:
         predictions = predictions[0]
