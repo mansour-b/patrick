@@ -4,10 +4,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import torch
 import yaml
 
-from patrick.core import ComputingDevice, Movie, NeuralNet, NNModel
+from patrick.core import ComputingDevice, Frame, Movie, NeuralNet, NNModel
 from patrick.interfaces import Builder, Repository
 
 DATA_DIR_PATH = Path.home() / "data"
@@ -94,7 +95,8 @@ class LocalMovieRepository(LocalRepository):
         self._directory_path = PATRICK_DIR_PATH / self.name
 
     def read(self, content_path: str or Path) -> Movie:
-        full_content_path = self._directory_path / content_path / "movie.json"
+        experiment, field = self._parse_movie_name(movie_name=str(content_path))
+        full_content_path = self._directory_path / experiment / f"{field}_movie.json"
 
         with Path.open(full_content_path) as f:
             movie_as_dict = json.load(f)
@@ -105,3 +107,19 @@ class LocalMovieRepository(LocalRepository):
         full_content_path = self._directory_path / content_path
         with Path.open(full_content_path, "w") as f:
             json.dump(content, f, indent=2)
+
+    @staticmethod
+    def _parse_movie_name(movie_name: str) -> tuple[str, str]:
+
+        experiment = "_".join(movie_name.split("_")[:-1])
+        field = movie_name.split("_")[-1]
+        return experiment, field
+
+    def _load_image_array(self, movie: Movie, frame: Frame) -> None:
+        experiment, field = self._parse_movie_name(movie_name=movie.name)
+        frame_id = int(frame.name)
+        image_array_path = (
+            self._directory_path / f"input/{experiment}/{field}_frame_{frame_id}.txt"
+        )
+        frame.image_array = np.loadtxt(image_array_path)
+        frame.image_array = np.loadtxt(image_array_path)
