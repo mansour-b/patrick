@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import numpy as np
 import torch
-from torchvision.models.detection import fasterrcnn_resnet50_fpn
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 
-from patrick.core import Box, Frame, NeuralNet, NNModel
+from patrick.core import Box, ComputingDevice, Frame, NeuralNet, NNModel
 
 
 class FasterRCNNModel(NNModel):
+    _device: ComputingDevice
 
     def __init__(
         self,
@@ -29,7 +28,7 @@ class FasterRCNNModel(NNModel):
         input_array = np.expand_dims(input_array, axis=0)
 
         input_array = torch.as_tensor(input_array)
-        input_array.to(self.device)
+        input_array.to(self._device)
         return input_array
 
     def post_process(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:

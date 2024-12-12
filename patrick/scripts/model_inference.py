@@ -87,7 +87,6 @@ if __name__ == "__main__":
         framework=framework,
         device=computing_device,
     )
-
     movie = load_movie(movie_name=movie_name, data_source=data_source)
 
     analysed_movie = compute_predictions(model, movie)

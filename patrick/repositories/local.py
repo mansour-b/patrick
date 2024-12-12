@@ -83,7 +83,7 @@ class LocalModelRepository(LocalRepository):
             return yaml.safe_load(f)
 
     def _load_net(self, content_path: str or Path) -> NeuralNet:
-        self._net_builder.build(model_name=content_path)
+        return self._net_builder.build(model_name=content_path)
 
 
 class LocalMovieRepository(LocalRepository):

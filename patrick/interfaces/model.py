@@ -28,4 +28,6 @@ class ModelBuilder(Builder):
 
     def build(self) -> Model:
         model_as_dict = self._model_repository.read(self._model_name)
-        return self._concrete_model_class(**model_as_dict)
+        model = self._concrete_model_class(**model_as_dict)
+        model._device = self._model_repository._net_builder._concrete_device
+        return model
