@@ -6,22 +6,21 @@ from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 
-from patrick.core import Box, Frame, NNModel
+from patrick.core import Box, Frame, NeuralNet, NNModel
 
 
 class FasterRCNNModel(NNModel):
 
     def __init__(
         self,
+        net: NeuralNet,
         label_map: dict[str, int],
-        post_processing_parameters: dict,
-        device: torch.device,
+        model_parameters: dict,
     ):
+        self.net = net
         self.label_map = label_map
-
-        self.nms_iou_threshold = nms_iou_threshold
-        self.score_threshold = score_threshold
-        self.device = device
+        self.pre_proc_params = model_parameters["pre_processing"]
+        self.post_proc_params = model_parameters["post_processing"]
 
     def pre_process(self, frame: Frame) -> torch.Tensor:
         input_array = np.expand_dims(frame.image_array, axis=0)
@@ -39,7 +38,7 @@ class FasterRCNNModel(NNModel):
         kept_indices = nms(
             boxes=predictions["boxes"],
             scores=predictions["scores"],
-            iou_threshold=self.nms_iou_threshold,
+            iou_threshold=self.post_proc_params["nms_iou_threshold"],
         )
         for k in predictions:
             predictions[k] = predictions[k][kept_indices]
