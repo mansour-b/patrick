@@ -89,6 +89,10 @@ class LocalMovieRepository(LocalRepository):
     data_source = "local"
     name: str
 
+    def __init__(self, name: str):
+        self.name = name
+        self._directory_path = PATRICK_DIR_PATH / self.name
+
     def read(self, content_path: str or Path) -> Movie:
         full_content_path = self._directory_path / content_path
 
