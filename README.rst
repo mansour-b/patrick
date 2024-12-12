@@ -1,4 +1,4 @@
-PATteRn dIsCovey for Kit (PATRICK)
+PATteRn dIsCovery Kit (PATRICK)
 ----------------------------------
 
 Welcome to the Pattern Discovery Kit!
