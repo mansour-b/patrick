@@ -107,13 +107,15 @@ class LocalMovieRepository(LocalRepository):
         return movie
 
     def write(self, content_path: str or Path, content: Movie) -> None:
-        full_content_path = self._directory_path / f"{content_path}.json"
+        experiment, field = self._parse_movie_name(movie_name=str(content_path))
+        full_content_path = self._directory_path / experiment / f"{field}_movie.json"
+        full_content_path.parent.mkdir(exist_ok=True)
+
         with Path.open(full_content_path, "w") as f:
             json.dump(content.to_dict(), f, indent=2)
 
     @staticmethod
     def _parse_movie_name(movie_name: str) -> tuple[str, str]:
-
         experiment = "_".join(movie_name.split("_")[:-1])
         field = movie_name.split("_")[-1]
         return experiment, field
