@@ -29,8 +29,7 @@ def net_repository_factory(
 
 def movie_repository_factory(data_source: DataSource, name: str) -> Repository:
     class_dict = {"local": LocalMovieRepository}
-    repository = class_dict[data_source](name)
-    return repository
+    return class_dict[data_source](name)
 
 
 def net_builder_factory(

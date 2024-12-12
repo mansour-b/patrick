@@ -21,6 +21,7 @@ class LocalRepository(Repository):
 
     def __init__(self):
         self._directory_path = PATRICK_DIR_PATH / self.name
+        self._directory_path.mkdir(parents=True, exist_ok=True)
 
 
 class LocalTorchNetRepository(LocalRepository):
@@ -93,7 +94,7 @@ class LocalMovieRepository(LocalRepository):
 
     def __init__(self, name: str):
         self.name = name
-        self._directory_path = PATRICK_DIR_PATH / self.name
+        super().__init__()
 
     def read(self, content_path: str or Path) -> Movie:
         experiment, field = self._parse_movie_name(movie_name=str(content_path))
@@ -106,9 +107,9 @@ class LocalMovieRepository(LocalRepository):
         return movie
 
     def write(self, content_path: str or Path, content: Movie) -> None:
-        full_content_path = self._directory_path / content_path
+        full_content_path = self._directory_path / f"{content_path}.json"
         with Path.open(full_content_path, "w") as f:
-            json.dump(content, f, indent=2)
+            json.dump(content.to_dict(), f, indent=2)
 
     @staticmethod
     def _parse_movie_name(movie_name: str) -> tuple[str, str]:
