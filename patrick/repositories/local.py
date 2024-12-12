@@ -99,9 +99,10 @@ class LocalMovieRepository(LocalRepository):
         full_content_path = self._directory_path / experiment / f"{field}_movie.json"
 
         with Path.open(full_content_path) as f:
-            movie_as_dict = json.load(f)
+            movie = Movie.from_dict(json.load(f))
+        self._load_image_arrays(movie)
 
-        return Movie.from_dict(movie_as_dict)
+        return movie
 
     def write(self, content_path: str or Path, content: Movie) -> None:
         full_content_path = self._directory_path / content_path
@@ -119,6 +120,10 @@ class LocalMovieRepository(LocalRepository):
         experiment, field = self._parse_movie_name(movie_name=movie.name)
         frame_id = int(frame.name)
         image_array_path = (
-            self._directory_path / f"input/{experiment}/{field}_frame_{frame_id}.txt"
+            self._directory_path / f"{experiment}/{field}_frame_{frame_id}.txt"
         )
         frame.image_array = np.loadtxt(image_array_path)
+
+    def _load_image_arrays(self, movie: Movie) -> None:
+        for frame in movie.frames:
+            self._load_image_array(movie, frame)
