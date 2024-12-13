@@ -3,8 +3,8 @@ from __future__ import annotations
 import numpy as np
 import torch
 
-from patrick import Box, Frame
 from patrick.cnn.faster_rcnn import FasterRCNNModel
+from patrick.core import Box, Frame
 
 
 class MockNet:
@@ -21,18 +21,23 @@ class MockNet:
 class TestFasterRCNN:
     @staticmethod
     def get_model():
-        return FasterRCNNModel(
+        model = FasterRCNNModel(
+            net=MockNet(),
             label_map={"blob": 1},
-            nms_iou_threshold=0.2,
-            score_threshold=0.7,
-            device=torch.device("cpu"),
+            model_parameters={
+                "pre_processing": {},
+                "net": {},
+                "post_processing": {"nms_iou_threshold": 0.2, "score_threshold": 0.7},
+            },
         )
+        model._device = torch.device("cpu")
+        return model
 
     def test_init(self):
         model = self.get_model()
         assert model.label_map == {"blob": 1}
-        assert model.nms_iou_threshold == 0.2
-        assert model.score_threshold == 0.7
+        assert model.post_proc_params["nms_iou_threshold"] == 0.2
+        assert model.post_proc_params["score_threshold"] == 0.7
 
     def test_reversed_label_map(self):
         model = self.get_model()
