@@ -15,40 +15,63 @@ You can install ``patrick`` from the source code by doing the following::
     pip install .
 
 Quickstart
-==========
+----------
 
-Here is an example to present briefly the API:
+Here is an example to briefly present the API:
 
 .. code:: python
 
     import numpy as np
-    import matplotlib.pyplot as plt
-    from alphacsc import BatchCDL
 
-    # Define the different dimensions of the problem
-    n_atoms = 10
-    n_times_atom = 50
-    n_channels = 5
-    n_trials = 10
-    n_times = 1000
+    from patrick.core import Box, Frame, Model, Movie, Tracker
+    from patrick.display import plot_frame
 
-    # Generate a random set of signals
-    X = np.random.randn(n_trials, n_channels, n_times)
+    # Define the dimensions of the problem
+    frame_width = 5
+    frame_height = 5
+    movie_length = 3
+    gif_frames_per_second = 2
 
-    # Learn a dictionary with batch algorithm and rank1 constraints.
-    cdl = BatchCDL(n_atoms, n_times_atom, rank1=True)
-    cdl.fit(X)
+    # Define a concrete model class, just for the example
+    class DumbModel(Model):
+        def predict(self, frame: Frame) -> Frame:
+            frame_id = int(frame.name)
+            frame.annotations.append(
+                Box(label="noise_in_a_square", x=frame_id, y=frame_id, width=1, height=1)
+            )
+            return frame
 
-    # Display the learned atoms
-    fig, axes = plt.subplots(n_atoms, 2, num="Dictionary")
-    for k in range(n_atoms):
-        axes[k, 0].plot(cdl.u_hat_[k])
-        axes[k, 1].plot(cdl.v_hat_[k])
+    model = DumbModel()
 
-    axes[0, 0].set_title("Spatial map")
-    axes[0, 1].set_title("Temporal map")
-    for ax in axes.ravel():
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
+    # Our data for this short tutorial
+    frames = [
+        Frame(
+            name=str(10 * i),
+            width=frame_width,
+            height=frame_height,
+            annotations=[],
+            image_array=np.random.random(frame_height, frame_width),
+        )
+        for i in range(movie_length)
+    ]
 
-    plt.show()
+    movie = Movie(name="some_noise", frames=frames, tracks=[])
+
+    # Run the detection model on individual frames
+    analysed_frames = [model(frame) for frame in movie.frames]
+    analysed_movie = Movie(
+        name="some_noise_with_boxes", frames=analysed_frames, tracks=[]
+    )
+
+    # TBD: run tracker on detections
+    analysed_movie = tracker.make_tracks(analysed_movie)
+    analysed_movie.name = "some_noise_with_boxes_and_tracks"
+
+    # Plot individual frames with detections
+    for frame in analysed_movie:
+        plot_frame(frame)
+
+    # TBD: make a GIF to show the tracks
+    export_to_gif(analysed_movie, fps=gif_frames_per_seconds)
+
+        
