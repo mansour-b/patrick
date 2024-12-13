@@ -33,6 +33,7 @@ doc = [
 ]
 test = [
   "pytest",
+  "pytest-cov",
 ]
 
 [tool.ruff]
