@@ -77,3 +77,6 @@ Here is an example to briefly present the API:
 
 .. |Build Status| image:: https://github.com/mansour-b/patrick/actions/workflows/pytest.yaml/badge.svg
     :target: https://github.com/mansour-b/patrick/actions/workflows/pytest.yaml
+
+.. |Code Coverage| image:: https://codecov.io/github/mansour-b/patrick/graph/badge.svg?token=E37XYKWFWT 
+    :target: https://codecov.io/github/mansour-b/patrick
