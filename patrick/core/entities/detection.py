@@ -9,15 +9,40 @@ from patrick.core.entities.frame import Frame
 
 
 class Model(ABC):
+    """Abstract class to represent a pattern detection model."""
+
     @abstractmethod
     def predict(self, frame: Frame) -> Frame:
-        pass
+        """Run the predictions of the model on a frame.
+
+        Args:
+            frame (Frame): Object representing the image or movie frame on
+                which the model will be applied.
+
+        Returns:
+            Frame: The input frame where the model predictions have been
+                appended to the list of already present annotations.
+
+        """
 
 
 class NeuralNet:
+    """Abstract class to model a neural network."""
+
     @abstractmethod
     def __call__(self, input_array: Array) -> Any:
-        pass
+        """Compute the predictions of the net on an array.
+
+        Args:
+            input_array (Array): An array representing the input frame/image,
+                compatible with the format of the neural network (np.ndarray,
+                torch.Tensor, etc.).
+
+        Returns:
+            Depending on the neural network architecture, a tensor, a dict of
+                tensors, or another sort of output.
+
+        """
 
 
 class NNModel(Model):
