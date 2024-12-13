@@ -1,5 +1,5 @@
 PATteRn dIsCovery Kit (PATRICK)
-----------------------------------
+-------------------------------
 |Build Status| |Code Coverage|
 
 Welcome to the Pattern Discovery Kit!
