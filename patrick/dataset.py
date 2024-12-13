@@ -100,7 +100,9 @@ class KeypointDataset(Dataset):
 
         box_list = [
             polyline_to_box(
-                polyline, w_padding=self._w_padding, h_padding=self.pox_h_padding
+                polyline,
+                w_padding=self._w_padding,
+                h_padding=self.pox_h_padding,
             )
             for polyline in image._annotations
         ]

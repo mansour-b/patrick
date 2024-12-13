@@ -21,7 +21,6 @@ class NeuralNet:
 
 
 class NNModel(Model):
-
     def __init__(
         self,
         net: NeuralNet,

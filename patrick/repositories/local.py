@@ -38,7 +38,8 @@ class LocalTorchNetRepository(LocalRepository):
             net_parameters = yaml.safe_load(f)["net"]
         return {
             "weights": torch.load(
-                full_content_path / "net.pth", map_location=self._concrete_device
+                full_content_path / "net.pth",
+                map_location=self._concrete_device,
             ),
             "net_parameters": net_parameters,
         }
@@ -49,7 +50,10 @@ class LocalTorchNetRepository(LocalRepository):
 
     @property
     def _concrete_device(self) -> torch.DeviceObjType:
-        torch_device_dict = {"cpu": torch.device("cpu"), "gpu": torch.device("cuda")}
+        torch_device_dict = {
+            "cpu": torch.device("cpu"),
+            "gpu": torch.device("cuda"),
+        }
         return torch_device_dict[self._device]
 
 
@@ -73,11 +77,15 @@ class LocalModelRepository(LocalRepository):
         pass
 
     def _load_label_map(self, content_path: str or Path) -> dict[str, int]:
-        full_content_path = self._directory_path / content_path / "label_map.yaml"
+        full_content_path = (
+            self._directory_path / content_path / "label_map.yaml"
+        )
         with Path.open(full_content_path) as f:
             return yaml.safe_load(f)
 
-    def _load_model_parameters(self, content_path: str or Path) -> dict[str, dict]:
+    def _load_model_parameters(
+        self, content_path: str or Path
+    ) -> dict[str, dict]:
         full_content_path = (
             self._directory_path / content_path / "model_parameters.yaml"
         )
@@ -98,7 +106,9 @@ class LocalMovieRepository(LocalRepository):
 
     def read(self, content_path: str or Path) -> Movie:
         experiment, field = self._parse_movie_name(movie_name=str(content_path))
-        full_content_path = self._directory_path / experiment / f"{field}_movie.json"
+        full_content_path = (
+            self._directory_path / experiment / f"{field}_movie.json"
+        )
 
         with Path.open(full_content_path) as f:
             movie = Movie.from_dict(json.load(f))
@@ -108,7 +118,9 @@ class LocalMovieRepository(LocalRepository):
 
     def write(self, content_path: str or Path, content: Movie) -> None:
         experiment, field = self._parse_movie_name(movie_name=str(content_path))
-        full_content_path = self._directory_path / experiment / f"{field}_movie.json"
+        full_content_path = (
+            self._directory_path / experiment / f"{field}_movie.json"
+        )
         full_content_path.parent.mkdir(exist_ok=True)
 
         with Path.open(full_content_path, "w") as f:

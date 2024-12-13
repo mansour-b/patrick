@@ -18,7 +18,6 @@ class NetBuilder(Builder):
         self._device = device
 
     def build(self, model_name: str) -> NeuralNet:
-
         net_as_dict = self._net_repository.read(model_name)
         weights = net_as_dict["weights"]
         net_parameters = net_as_dict["net_parameters"]
@@ -45,7 +44,6 @@ class NetBuilder(Builder):
 
 
 class TorchNetBuilder(NetBuilder):
-
     def _define_architecture(self, net_parameters: dict[str, Any]) -> NeuralNet:
         net = fasterrcnn_resnet50_fpn()
         in_features = net.roi_heads.box_predictor.cls_score.in_features
@@ -65,5 +63,8 @@ class TorchNetBuilder(NetBuilder):
 
     @property
     def _concrete_device(self) -> torch.DeviceObjType:
-        torch_device_dict = {"cpu": torch.device("cpu"), "gpu": torch.device("cuda")}
+        torch_device_dict = {
+            "cpu": torch.device("cpu"),
+            "gpu": torch.device("cuda"),
+        }
         return torch_device_dict[self._device]

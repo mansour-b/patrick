@@ -2,7 +2,6 @@ from patrick.core.entities.annotation import Box, Keypoint
 
 
 class TestBox:
-
     def test_init(self):
         box = Box(label="blob", x=0, y=0, width=1, height=1, score=1)
         assert box.label == "blob"
@@ -91,7 +90,9 @@ class TestBox:
 
 class TestKeypoint:
     def test_init(self):
-        keypoint = Keypoint(label="blob", point_list=[(0, 0), (1, 1)], score=1.0)
+        keypoint = Keypoint(
+            label="blob", point_list=[(0, 0), (1, 1)], score=1.0
+        )
         assert keypoint.label == "blob"
         assert keypoint.point_list == [(0, 0), (1, 1)]
         assert keypoint.score == 1

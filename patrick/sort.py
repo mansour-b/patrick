@@ -56,7 +56,8 @@ def iou_batch(bb_test, bb_gt):
     h = np.maximum(0.0, yy2 - yy1)
     wh = w * h
     o = wh / (
-        (bb_test[..., 2] - bb_test[..., 0]) * (bb_test[..., 3] - bb_test[..., 1])
+        (bb_test[..., 2] - bb_test[..., 0])
+        * (bb_test[..., 3] - bb_test[..., 1])
         + (bb_gt[..., 2] - bb_gt[..., 0]) * (bb_gt[..., 3] - bb_gt[..., 1])
         - wh
     )
@@ -91,7 +92,13 @@ def convert_x_to_bbox(x, score=None):
         ).reshape((1, 4))
     else:
         return np.array(
-            [x[0] - w / 2.0, x[1] - h / 2.0, x[0] + w / 2.0, x[1] + h / 2.0, score]
+            [
+                x[0] - w / 2.0,
+                x[1] - h / 2.0,
+                x[0] + w / 2.0,
+                x[1] + h / 2.0,
+                score,
+            ]
         ).reshape((1, 5))
 
 
@@ -129,9 +136,9 @@ class KalmanBoxTracker(object):
         )
 
         self.kf.R[2:, 2:] *= 10.0
-        self.kf.P[
-            4:, 4:
-        ] *= 1000.0  # give high uncertainty to the unobservable initial velocities
+        self.kf.P[4:, 4:] *= (
+            1000.0  # give high uncertainty to the unobservable initial velocities
+        )
         self.kf.P *= 10.0
         self.kf.Q[-1, -1] *= 0.01
         self.kf.Q[4:, 4:] *= 0.01
@@ -258,8 +265,8 @@ class Sort(object):
         trks = np.ma.compress_rows(np.ma.masked_invalid(trks))
         for t in reversed(to_del):
             self.trackers.pop(t)
-        matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(
-            dets, trks, self.iou_threshold
+        matched, unmatched_dets, unmatched_trks = (
+            associate_detections_to_trackers(dets, trks, self.iou_threshold)
         )
 
         # update matched trackers with assigned detections
@@ -274,7 +281,8 @@ class Sort(object):
         for trk in reversed(self.trackers):
             d = trk.get_state()[0]
             if (trk.time_since_update < 1) and (
-                trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits
+                trk.hit_streak >= self.min_hits
+                or self.frame_count <= self.min_hits
             ):
                 ret.append(
                     np.concatenate((d, [trk.id + 1])).reshape(1, -1)
@@ -316,7 +324,10 @@ def parse_args():
         default=3,
     )
     parser.add_argument(
-        "--iou_threshold", help="Minimum IOU for match.", type=float, default=0.3
+        "--iou_threshold",
+        help="Minimum IOU for match.",
+        type=float,
+        default=0.3,
     )
     args = parser.parse_args()
     return args
@@ -357,12 +368,18 @@ if __name__ == "__main__":
             for frame in range(int(seq_dets[:, 0].max())):
                 frame += 1  # detection and frame numbers begin at 1
                 dets = seq_dets[seq_dets[:, 0] == frame, 2:7]
-                dets[:, 2:4] += dets[:, 0:2]  # convert to [x1,y1,w,h] to [x1,y1,x2,y2]
+                dets[:, 2:4] += dets[
+                    :, 0:2
+                ]  # convert to [x1,y1,w,h] to [x1,y1,x2,y2]
                 total_frames += 1
 
                 if display:
                     fn = os.path.join(
-                        "mot_benchmark", phase, seq, "img1", "%06d.jpg" % (frame)
+                        "mot_benchmark",
+                        phase,
+                        seq,
+                        "img1",
+                        "%06d.jpg" % (frame),
                     )
                     im = io.imread(fn)
                     ax1.imshow(im)
@@ -403,4 +420,6 @@ if __name__ == "__main__":
     )
 
     if display:
-        print("Note: to get real runtime results run without the option: --display")
+        print(
+            "Note: to get real runtime results run without the option: --display"
+        )

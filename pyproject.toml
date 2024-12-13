@@ -19,15 +19,58 @@ requires-python = ">=3.8"
 authors = [
   {name = "Mansour Benbakoura", email = "mansour.benbakoura@inria.fr"}
 ]
-description = "Pattern discovery on TOKAM2D movies"
+description = "Pattern Discovery Kit"
 readme = "README.md"
 
 [tool.ruff]
-line-length = 88
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+line-length = 80
+indent-width = 4
+
+target-version = "py310"
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint]
-select = ["ALL"]
-ignore = ["ANN204", "COM812", "D100", "D103", "D105", "T201"]
+select = ["E4", "E7", "E9", "F"]
+ignore = []
 
-[tool.ruff.lint.per-file-ignores]
-"tests/*" = ["ANN", "D", "FLY002", "INP001", "PLR2004", "S101"]
+fixable = ["ALL"]
+unfixable = []
+
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"

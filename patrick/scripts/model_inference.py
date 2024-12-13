@@ -47,7 +47,6 @@ def load_model(
     framework: Framework,
     device: ComputingDevice,
 ) -> Model:
-
     net_repository = net_repository_factory(data_source, framework, device)
     net_builder = net_builder_factory(framework, device, net_repository)
 
@@ -75,7 +74,6 @@ def save_movie(movie: Movie, data_source: DataSource) -> None:
 
 
 if __name__ == "__main__":
-
     movie_name = "blob_i_density"
     model_name = "faster_rcnn_241113_131447"
     data_source = "local"

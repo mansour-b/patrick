@@ -27,7 +27,10 @@ class TestFasterRCNN:
             model_parameters={
                 "pre_processing": {},
                 "net": {},
-                "post_processing": {"nms_iou_threshold": 0.2, "score_threshold": 0.7},
+                "post_processing": {
+                    "nms_iou_threshold": 0.2,
+                    "score_threshold": 0.7,
+                },
             },
         )
         model._device = torch.device("cpu")
@@ -101,5 +104,7 @@ class TestFasterRCNN:
             name="frame_0",
             width=32,
             height=32,
-            annotations=[Box(label="blob", x=1, y=2, width=2, height=2, score=1)],
+            annotations=[
+                Box(label="blob", x=1, y=2, width=2, height=2, score=1)
+            ],
         )

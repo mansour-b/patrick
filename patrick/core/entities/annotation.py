@@ -54,7 +54,13 @@ class Box(Annotation):
     """Class to represent bounding boxes."""
 
     def __init__(
-        self, label: str, x: float, y: float, width: float, height: float, score: float
+        self,
+        label: str,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        score: float,
     ):
         """Initialise the bounding box.
 
@@ -140,7 +146,9 @@ class Keypoint(Annotation):
 
         """
         super().__init__(label, score)
-        self.point_list = [(float(coord[0]), float(coord[1])) for coord in point_list]
+        self.point_list = [
+            (float(coord[0]), float(coord[1])) for coord in point_list
+        ]
 
     @classmethod
     def printable_fields(cls) -> list[str]:
@@ -164,7 +172,9 @@ class Keypoint(Annotation):
             h_ratio (float): Height ratio.
 
         """
-        self.point_list = [(x * w_ratio, y * h_ratio) for x, y in self.point_list]
+        self.point_list = [
+            (x * w_ratio, y * h_ratio) for x, y in self.point_list
+        ]
 
 
 class Track(Annotation):

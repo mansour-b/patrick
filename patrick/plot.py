@@ -19,7 +19,6 @@ def make_movie(
     format: str,
     **plot_image_kwargs,
 ):
-
     matplotlib.use("agg")
 
     time_str = time.strftime("%y%m%d_%H%M%S")

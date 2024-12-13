@@ -65,7 +65,9 @@ class FasterRCNNModel(NNModel):
     ) -> Box:
         x, y, width, height = self.xyxy_to_xywh(*box_xyxy)
         str_label = self.reversed_label_map[int(label)]
-        return Box(label=str_label, x=x, y=y, width=width, height=height, score=score)
+        return Box(
+            label=str_label, x=x, y=y, width=width, height=height, score=score
+        )
 
     @staticmethod
     def xyxy_to_xywh(
