@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
   "numpy<2",
   "pytest",
+  "pytest-cov",
   "PyYAML",
   "ruff",
   "torch",
