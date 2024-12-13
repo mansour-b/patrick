@@ -1,5 +1,6 @@
 PATteRn dIsCovery Kit (PATRICK)
 ----------------------------------
+|Build Status|
 
 Welcome to the Pattern Discovery Kit!
 
@@ -74,4 +75,5 @@ Here is an example to briefly present the API:
     # TBD: make a GIF to show the tracks
     export_to_gif(analysed_movie, fps=gif_frames_per_seconds)
 
-        
+.. |Build Status| image:: https://github.com/mansour-b/patrick/actions/workflows/pytest.yaml/badge.svg
+    :target: https://github.com/mansour-b/patrick/actions/workflows/pytest.yaml
