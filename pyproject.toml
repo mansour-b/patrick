@@ -34,9 +34,6 @@ doc = [
 test = [
   "pytest",
 ]
-all = [
-  "[dev,test]"
-]
 
 [tool.ruff]
 exclude = [
