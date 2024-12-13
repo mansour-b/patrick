@@ -1,4 +1,4 @@
-from patrick.core.entities.annotation import Annotation, Box, Keypoint
+from patrick.core.entities.annotation import Annotation, Box, Keypoint, Track
 from patrick.core.entities.detection import CDModel, Model, NeuralNet, NNModel
 from patrick.core.entities.frame import Frame
 from patrick.core.entities.movie import Movie
@@ -17,4 +17,5 @@ __all__ = [
     "Movie",
     "NNModel",
     "NeuralNet",
+    "Track",
 ]
