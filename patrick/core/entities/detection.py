@@ -46,17 +46,48 @@ class NeuralNet:
 
 
 class NNModel(Model):
+    """Abstract class representing neural-network-based models."""
+
     def __init__(
         self,
         net: NeuralNet,
         label_map: dict[str, int],
         model_parameters: dict,
     ):
+        """Initialise the object.
+
+        Args:
+            net (NeuralNet): The neural network that runs under the hood.
+            label_map (dict): Dictionary in format {"class_name": class_id}.
+                The class ids should start from 1 since 0 is reserved for the
+                background class.
+            model_parameters (dict): Pre-/post-processing parameters such as:
+                - The input channel format (channels_first or channels_last),
+                - The prediction confindence score threshold,
+                - Any other parameter on which the behavior of the model relies.
+
+        """
         self.net = net
         self.label_map = label_map
         self.model_parameters = model_parameters
 
     def predict(self, frame: Frame) -> Frame:
+        """Run the predictions of the model on a frame.
+
+        The method follows the following scheme:
+            - input_frame ------[pre-processing ]--> input_array,
+            - input_array ------[      net      ]--> net_predictions,
+            - net_predictions --[post_processing]--> output_frame.
+
+        Args:
+            frame (Frame): Object representing the image or movie frame on
+                which the model will be applied.
+
+        Returns:
+            Frame: The input frame where the model predictions have been
+                appended to the list of already present annotations.
+
+        """
         input_array = self.pre_process(frame)
         predictions = self.net(input_array)
         annotations = self.post_process(predictions)
@@ -70,12 +101,12 @@ class NNModel(Model):
 
     @abstractmethod
     def pre_process(self, frame: Frame) -> Array:
-        pass
+        """Prepare the frame's array to pass through the neural network."""
 
     @abstractmethod
     def post_process(self, net_predictions: Any) -> list[Annotation]:
-        pass
+        """Convert the net's predictions into patrick's "Annotation" format."""
 
 
 class CDModel(Model):
-    pass
+    """Abstract class representing convolutional-dictionary-based models."""
