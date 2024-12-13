@@ -4,7 +4,13 @@ PATteRn dIsCovery Kit (PATRICK)
 
 Welcome to the Pattern Discovery Kit!
 
-This library provides tools to discover, detect, and track meaningful patterns in physical signals.
+This library provides tools to discover, detect, and track meaningful patterns
+in physical signals. These signals can be of various forms:
+
+1. Time series,
+2. Images,
+3. Movies,
+4. Any other type of n-dimensional data.
 
 Installation
 ------------
