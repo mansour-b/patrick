@@ -1,6 +1,6 @@
 import pytest
 
-from patrick.core.value_objects import ComputingDevice, DataSource, Framework
+from patrick.core import ComputingDevice, DataSource, Framework
 
 
 def test_computing_device():

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from tqdm import tqdm
 
-from patrick.core import Model, Movie
-from patrick.core.value_objects import ComputingDevice, DataSource, Framework
+from patrick.core import ComputingDevice, DataSource, Framework, Model, Movie
 from patrick.interfaces.cnn import NetBuilder, TorchNetBuilder
 from patrick.interfaces.model import ModelBuilder
 from patrick.interfaces.repository import Repository
