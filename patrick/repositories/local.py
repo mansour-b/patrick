@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import json
+from io import BytesIO
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 import yaml
 
-from patrick.core import Frame, Movie, NeuralNet, NNModel
+from patrick.core import Frame, Movie, NNModel
 from patrick.interfaces import Repository
 
 DATA_DIR_PATH = Path.home() / "data"
@@ -73,21 +73,20 @@ class LocalFrameRepository(LocalRepository):
     def write(self, content_path: str or Path, content: Frame) -> None:
         pass
 
-    def _parse_frame_name(self, frame_name: str) -> tuple[str, str, int]:
+    @staticmethod
+    def _parse_frame_name(frame_name: str) -> tuple[str, str, int]:
         experiment = frame_name.split("/")[0]
         field, _, frame_id = frame_name.split("/")[1].split("_")
         return experiment, field, int(frame_id)
 
 
 class LocalNNModelRepository(LocalRepository):
-    def read(self, content_path: str or Path) -> dict[str, dict or Any]:
-        label_map = self._load_label_map(content_path)
-        model_parameters = self._load_model_parameters(content_path)
-        net = self._load_net(content_path)
+    def read(self, content_path: str or Path) -> dict[str, dict or BytesIO]:
+
         return {
-            "label_map": label_map,
-            "model_parameters": model_parameters,
-            "net": net,
+            "label_map": self._load_label_map(content_path),
+            "model_parameters": self._load_model_parameters(content_path),
+            "raw_net": self._load_raw_net(content_path),
         }
 
     def write(self, content_path: str or Path, content: NNModel) -> None:
@@ -109,8 +108,10 @@ class LocalNNModelRepository(LocalRepository):
         with Path.open(full_content_path) as f:
             return yaml.safe_load(f)
 
-    def _load_net(self, content_path: str or Path) -> NeuralNet:
-        pass
+    def _load_raw_net(self, content_path: str or Path) -> BytesIO:
+        full_content_path = self._directory_path / content_path / "net.pth"
+        with Path.open(full_content_path, "rb") as f:
+            return BytesIO(f.read())
 
 
 class LocalMovieRepository(LocalRepository):

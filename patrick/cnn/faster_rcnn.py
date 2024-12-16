@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+from io import BytesIO
+from typing import Any
+
 import numpy as np
 import torch
+from torchvision.models.detection import fasterrcnn_resnet50_fpn
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
+from typing_extensions import Self
 
 from patrick.core import Box, ComputingDevice, Frame, NeuralNet, NNModel
 
@@ -20,6 +26,7 @@ class FasterRCNNModel(NNModel):
         self.label_map = label_map
         self.pre_proc_params = model_parameters["pre_processing"]
         self.post_proc_params = model_parameters["post_processing"]
+        self._device = "cpu"
 
     def pre_process(self, frame: Frame) -> torch.Tensor:
         input_array = np.expand_dims(frame.image_array, axis=0)
@@ -78,3 +85,49 @@ class FasterRCNNModel(NNModel):
         width = xmax - xmin
         height = ymax - ymin
         return x, y, width, height
+
+    @classmethod
+    def from_dict(cls, model_as_dict: dict) -> Self:
+        net_builder = TorchNetBuilder()
+
+        return cls(
+            net=net_builder.build(model_as_dict),
+            label_map=model_as_dict["label_map"],
+            model_parameters=model_as_dict["model_parameters"],
+        )
+
+    def to_dict(self) -> dict:
+        pass
+
+    def set_device(self, device: ComputingDevice) -> None:
+        self._device = device
+        self.net.to(device)
+
+
+class TorchNetBuilder:
+
+    def build(self, model_as_dict: dict[str, str or BytesIO]) -> NeuralNet:
+        weights = torch.load(
+            model_as_dict["raw_net"], weights_only=True, map_location="cpu"
+        )
+        net_parameters = model_as_dict["model_parameters"]["net"]
+
+        net = self._define_architecture(net_parameters)
+        self._load_weights(net, weights)
+        net.eval()
+
+        return net
+
+    def _define_architecture(self, net_parameters: dict[str, Any]) -> NeuralNet:
+        net = fasterrcnn_resnet50_fpn()
+        in_features = net.roi_heads.box_predictor.cls_score.in_features
+
+        num_classes = net_parameters["num_classes"]
+        num_classes_including_background_class = num_classes + 1
+        net.roi_heads.box_predictor = FastRCNNPredictor(
+            in_features, num_classes=num_classes_including_background_class
+        )
+        return net
+
+    def _load_weights(self, net: NeuralNet, weights: dict) -> None:
+        net.load_state_dict(weights)

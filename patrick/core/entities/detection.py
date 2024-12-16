@@ -3,9 +3,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
+from typing_extensions import Self
+
 from patrick.core.entities.annotation import Annotation
 from patrick.core.entities.array import Array
 from patrick.core.entities.frame import Frame
+from patrick.core.value_objects import ComputingDevice
 
 
 class Model(ABC):
@@ -24,6 +27,15 @@ class Model(ABC):
                 appended to the list of already present annotations.
 
         """
+
+    @classmethod
+    @abstractmethod
+    def from_dict(cls, model_as_dict: dict) -> Self:
+        pass
+
+    @abstractmethod
+    def to_dict(self) -> dict:
+        pass
 
 
 class NeuralNet:
@@ -106,6 +118,10 @@ class NNModel(Model):
     @abstractmethod
     def post_process(self, net_predictions: Any) -> list[Annotation]:
         """Convert the net's predictions into patrick's "Annotation" format."""
+
+    @abstractmethod
+    def set_device(self, device: ComputingDevice) -> None:
+        pass
 
 
 class CDModel(Model):
