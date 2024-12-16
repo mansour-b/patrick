@@ -7,7 +7,9 @@ from patrick.core import DataSource
 
 class Repository(ABC):
     data_source: DataSource
-    name: str
+
+    def __init__(self, name: str):
+        self.name = name
 
     @abstractmethod
     def read(self, content_path: str or Path) -> Any:

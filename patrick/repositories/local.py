@@ -5,11 +5,10 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import torch
 import yaml
 
-from patrick.core import ComputingDevice, Frame, Movie, NeuralNet, NNModel
-from patrick.interfaces import Builder, Repository
+from patrick.core import Frame, Movie, NeuralNet, NNModel
+from patrick.interfaces import Repository
 
 DATA_DIR_PATH = Path.home() / "data"
 PATRICK_DIR_PATH = DATA_DIR_PATH / "pattern_discovery"
@@ -17,56 +16,74 @@ PATRICK_DIR_PATH = DATA_DIR_PATH / "pattern_discovery"
 
 class LocalRepository(Repository):
     data_source = "local"
-    name: str
 
-    def __init__(self):
+    def __init__(self, name: str):
+        super().__init__(name)
         self._directory_path = PATRICK_DIR_PATH / self.name
         self._directory_path.mkdir(parents=True, exist_ok=True)
 
 
-class LocalTorchNetRepository(LocalRepository):
-    data_source = "local"
-    name = "models"
+class LocalFrameRepository(LocalRepository):
 
-    def __init__(self, device: ComputingDevice):
-        super().__init__()
-        self._device = device
+    def __init__(self, name: str):
+        self.name = name
+        self._directory_path = {
+            "input_frames": PATRICK_DIR_PATH / "input",
+            "output_frames": PATRICK_DIR_PATH / "output",
+        }[name]
 
-    def read(self, content_path: str or Path) -> dict[str, Any]:
-        full_content_path = self._directory_path / content_path
-        with Path.open(full_content_path / "model_parameters.yaml") as f:
-            net_parameters = yaml.safe_load(f)["net"]
-        return {
-            "weights": torch.load(
-                full_content_path / "net.pth",
-                map_location=self._concrete_device,
-            ),
-            "net_parameters": net_parameters,
-        }
+    def read(self, content_path: str or Path) -> Frame:
+        experiment, field, frame_id = self._parse_frame_name(str(content_path))
+        file_stem = f"{field}_frame_{frame_id}"
+        metadata_path = self._directory_path / experiment / f"{file_stem}.json"
+        image_array_path = (
+            self._directory_path / experiment / f"{file_stem}.txt"
+        )
 
-    def write(self, content_path: str or Path, content: Any) -> None:
-        full_content_path = self._directory_path / content_path
-        torch.save(content, full_content_path)
+        if not metadata_path.exists() and not image_array_path.exists():
+            msg = f"""
+                Could not find any information on frame '{content_path}'.
+                Please make sure that either:
+                - a JSON file with metadata or
+                - a txt file containing the image array
+                exists in the folder.
+            """.strip()
+            raise FileNotFoundError(msg)
 
-    @property
-    def _concrete_device(self) -> torch.DeviceObjType:
-        torch_device_dict = {
-            "cpu": torch.device("cpu"),
-            "gpu": torch.device("cuda"),
-        }
-        return torch_device_dict[self._device]
+        if not metadata_path.exists():
+            image_array = np.loadtxt(image_array_path)
+            height, width = image_array.shape
+            return Frame(
+                name=file_stem,
+                width=width,
+                height=height,
+                annotations=[],
+                image_array=image_array,
+            )
+
+        with Path.open(metadata_path) as f:
+            frame = Frame.from_dict(json.load(metadata_path))
+
+        if not image_array_path.exists():
+            return frame
+
+        frame.image_array = np.loadtxt(image_array_path)
+        return frame
+
+    def write(self, content_path: str or Path, content: Frame) -> None:
+        pass
+
+    def _parse_frame_name(self, frame_name: str) -> tuple[str, str, int]:
+        experiment = frame_name.split("/")[0]
+        field, _, frame_id = frame_name.split("/")[1].split("_")
+        return experiment, field, int(frame_id)
 
 
-class LocalModelRepository(LocalRepository):
-    data_source = "local"
-    name = "models"
-    _net_builder: Builder
-
+class LocalNNModelRepository(LocalRepository):
     def read(self, content_path: str or Path) -> dict[str, dict or Any]:
         label_map = self._load_label_map(content_path)
         model_parameters = self._load_model_parameters(content_path)
         net = self._load_net(content_path)
-        net.eval()
         return {
             "label_map": label_map,
             "model_parameters": model_parameters,
@@ -93,17 +110,10 @@ class LocalModelRepository(LocalRepository):
             return yaml.safe_load(f)
 
     def _load_net(self, content_path: str or Path) -> NeuralNet:
-        return self._net_builder.build(model_name=content_path)
+        pass
 
 
 class LocalMovieRepository(LocalRepository):
-    data_source = "local"
-    name: str
-
-    def __init__(self, name: str):
-        self.name = name
-        super().__init__()
-
     def read(self, content_path: str or Path) -> Movie:
         experiment, field = self._parse_movie_name(movie_name=str(content_path))
         full_content_path = (
