@@ -114,6 +114,14 @@ class LocalNNModelRepository(LocalRepository):
 
 
 class LocalMovieRepository(LocalRepository):
+
+    def __init__(self, name: str):
+        self.name = name
+        self._directory_path = {
+            "input_movies": PATRICK_DIR_PATH / "input",
+            "output_movies": PATRICK_DIR_PATH / "output",
+        }[name]
+
     def read(self, content_path: str or Path) -> Movie:
         experiment, field = self._parse_movie_name(movie_name=str(content_path))
         full_content_path = (
@@ -138,9 +146,7 @@ class LocalMovieRepository(LocalRepository):
 
     @staticmethod
     def _parse_movie_name(movie_name: str) -> tuple[str, str]:
-        experiment = "_".join(movie_name.split("_")[:-1])
-        field = movie_name.split("_")[-1]
-        return experiment, field
+        return tuple(movie_name.split("/"))
 
     def _load_image_array(self, movie: Movie, frame: Frame) -> None:
         experiment, field = self._parse_movie_name(movie_name=movie.name)

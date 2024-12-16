@@ -1,6 +1,10 @@
 import pytest
 
-from patrick.repositories.local import PATRICK_DIR_PATH, LocalFrameRepository
+from patrick.repositories.local import (
+    PATRICK_DIR_PATH,
+    LocalFrameRepository,
+    LocalMovieRepository,
+)
 
 
 class TestLocalFrameRepository:
@@ -19,3 +23,17 @@ class TestLocalFrameRepository:
             "density",
             20,
         )
+
+
+class TestLocalMovieRepository:
+
+    def test_init(self):
+        repo = LocalMovieRepository("input_movies")
+        assert repo.name == "input_movies"
+        assert repo._directory_path == PATRICK_DIR_PATH / "input"
+        with pytest.raises(KeyError):
+            LocalMovieRepository("input")
+
+    def test_parse_movie_name(self):
+        repo = LocalMovieRepository("input_movies")
+        assert repo._parse_movie_name("blob/density") == ("blob", "density")
