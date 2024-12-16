@@ -62,7 +62,7 @@ class LocalFrameRepository(LocalRepository):
             )
 
         with Path.open(metadata_path) as f:
-            frame = Frame.from_dict(json.load(metadata_path))
+            frame = Frame.from_dict(json.load(f))
 
         if not image_array_path.exists():
             return frame
