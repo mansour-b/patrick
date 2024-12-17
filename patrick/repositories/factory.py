@@ -4,9 +4,8 @@ from patrick.repositories.local import (
     LocalFrameRepository,
     LocalMovieRepository,
     LocalNNModelRepository,
-    OSFMovieRepository,
-    OSFNNModelRepository,
 )
+from patrick.repositories.osf import OSFMovieRepository, OSFNNModelRepository
 
 
 def repository_factory(data_source: DataSource, name: str) -> Repository:

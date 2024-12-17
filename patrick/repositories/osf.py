@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import json
 from io import BytesIO
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import yaml
 from osfclient import OSF
 
+from patrick.core import Frame, Movie
 from patrick.interfaces import Repository
 
 PATRICK_OSF_PROJECT_ID = "jtp4z"
@@ -31,6 +34,12 @@ class OSFRepository(Repository):
     def write(self, content_path: str or Path, content: Any) -> None:
         msg = "OSFRepository is intended to be read-only."
         raise NotImplementedError(msg)
+
+    @staticmethod
+    def _open_mock_file() -> BytesIO:
+        buffer = BytesIO()
+        buffer.mode = "b"
+        return buffer
 
 
 class OSFNNModelRepository(OSFRepository):
@@ -75,9 +84,38 @@ class OSFMovieRepository(OSFRepository):
             if k.split("/")[0] == folder_name
         }
 
-    def read(self, content_path: str or Path):
-        pass
+    def read(self, content_path: str or Path) -> Movie:
+        experiment, field = self._parse_movie_name(movie_name=str(content_path))
+        movie_file = self._storage_dict[
+            str(self._path / experiment / f"{field}_movie.json")
+        ]
+        buffer = self._open_mock_file()
+        movie_file.write_to(buffer)
+        buffer.seek(0)
+
+        movie_as_dict = json.load(buffer)
+        movie = Movie.from_dict(movie_as_dict)
+        self._load_image_arrays(movie)
+
+        return movie
 
     @staticmethod
     def _parse_movie_name(movie_name: str) -> tuple[str, str]:
         return tuple(movie_name.split("/"))
+
+    def _load_image_array(self, movie: Movie, frame: Frame) -> None:
+        experiment, field = self._parse_movie_name(movie_name=movie.name)
+        frame_id = int(frame.name)
+        image_array_file = self._storage_dict[
+            str(self._path / experiment / f"{field}_frame_{frame_id}.txt")
+        ]
+        buffer = self._open_mock_file()
+        image_array_file.write_to(buffer)
+        buffer.seek(0)
+        frame.image_array = np.frombuffer(
+            buffer.read(), dtype=np.float64
+        ).reshape(frame.height, frame.width)
+
+    def _load_image_arrays(self, movie: Movie) -> None:
+        for frame in movie.frames:
+            self._load_image_array(movie, frame)
