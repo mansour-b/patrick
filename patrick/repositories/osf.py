@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from io import BytesIO
 from pathlib import Path
+from typing import Any
 
 import yaml
 from osfclient import OSF
@@ -27,6 +28,10 @@ class OSFRepository(Repository):
             k: v for k, v in STORAGE_DICT.items() if k.split("/")[0] == name
         }
 
+    def write(self, content_path: str or Path, content: Any) -> None:
+        msg = "OSFRepository is intended to be read-only."
+        raise NotImplementedError(msg)
+
 
 class OSFNNModelRepository(OSFRepository):
     def read(self, content_path: str or Path) -> dict[str, dict or BytesIO]:
@@ -37,9 +42,6 @@ class OSFNNModelRepository(OSFRepository):
             ),
             "raw_net": self._load_raw_net(content_path),
         }
-
-    def write(self, content_path: str or Path):
-        raise NotImplementedError
 
     def _load_yaml_file(
         self, content_path: str or Path, file_name: str
@@ -61,8 +63,21 @@ class OSFNNModelRepository(OSFRepository):
 
 
 class OSFMovieRepository(OSFRepository):
+
+    def __init__(self, name: str):
+        self.name = name
+
+        folder_name = {"input_movies": "input"}[name]
+        self._path = Path(folder_name)
+        self._storage_dict = {
+            k: v
+            for k, v in STORAGE_DICT.items()
+            if k.split("/")[0] == folder_name
+        }
+
     def read(self, content_path: str or Path):
         pass
 
-    def write(self, content_path: str or Path):
-        raise NotImplementedError
+    @staticmethod
+    def _parse_movie_name(movie_name: str) -> tuple[str, str]:
+        return tuple(movie_name.split("/"))
