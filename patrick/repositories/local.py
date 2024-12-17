@@ -71,7 +71,7 @@ class LocalFrameRepository(LocalRepository):
         return frame
 
     def write(self, content_path: str or Path, content: Frame) -> None:
-        pass
+        raise NotImplementedError
 
     @staticmethod
     def _parse_frame_name(frame_name: str) -> tuple[str, str, int]:
@@ -90,7 +90,7 @@ class LocalNNModelRepository(LocalRepository):
         }
 
     def write(self, content_path: str or Path, content: NNModel) -> None:
-        pass
+        raise NotImplementedError
 
     def _load_label_map(self, content_path: str or Path) -> dict[str, int]:
         full_content_path = (

@@ -16,6 +16,7 @@ readme = "README.md"
 
 dependencies = [
   "numpy<2",
+  "osfclient",
   "PyYAML",
   "torch",
   "torchaudio",

@@ -4,6 +4,8 @@ from patrick.repositories.local import (
     LocalFrameRepository,
     LocalMovieRepository,
     LocalNNModelRepository,
+    OSFMovieRepository,
+    OSFNNModelRepository,
 )
 
 
@@ -16,7 +18,11 @@ def repository_factory(data_source: DataSource, name: str) -> Repository:
             "input_movies": LocalMovieRepository,
             "output_movies": LocalMovieRepository,
             "models": LocalNNModelRepository,
-        }
+        },
+        "osf": {
+            "input_movies": OSFMovieRepository,
+            "models": OSFNNModelRepository,
+        },
     }
     repo_class = repo_class_dict[data_source][name]
     return repo_class(name)

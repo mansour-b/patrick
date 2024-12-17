@@ -7,6 +7,7 @@ class Framework(Enum):
 
 class DataSource(Enum):
     local = "local"
+    osf = "osf"
 
 
 class ComputingDevice(Enum):
