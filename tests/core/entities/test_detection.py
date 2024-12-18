@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import numpy as np
+from typing_extensions import Self
 
 from patrick.core import (
     Annotation,
     Array,
     Box,
+    ComputingDevice,
     Frame,
     Model,
     NeuralNet,
@@ -20,6 +22,16 @@ class TestModel:
         class DumbModel(Model):
             def predict(self, frame: Frame) -> Frame:
                 return frame
+
+            @classmethod
+            def from_dict(cls, model_as_dict: dict) -> Self:
+                raise NotImplementedError
+
+            def to_dict(self) -> dict:
+                raise NotImplementedError
+
+            def set_device(self, device: ComputingDevice) -> None:
+                raise NotImplementedError
 
         return DumbModel()
 
@@ -66,6 +78,16 @@ class TestNNModel:
                 return [
                     Box(label="blob", x=1, y=1, width=1, height=1, score=1.0)
                 ]
+
+            @classmethod
+            def from_dict(cls, model_as_dict: dict) -> Self:
+                raise NotImplementedError
+
+            def to_dict(self) -> dict:
+                raise NotImplementedError
+
+            def set_device(self, device: ComputingDevice) -> None:
+                raise NotImplementedError
 
         return DumbNNModel(
             net=DumbNN(),

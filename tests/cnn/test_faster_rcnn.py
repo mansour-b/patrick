@@ -33,7 +33,6 @@ class TestFasterRCNN:
                 },
             },
         )
-        model._device = torch.device("cpu")
         return model
 
     def test_init(self):
