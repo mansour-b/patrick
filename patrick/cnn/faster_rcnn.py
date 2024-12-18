@@ -35,7 +35,7 @@ class FasterRCNNModel(NNModel):
         input_array = np.expand_dims(input_array, axis=0)
 
         input_array = torch.as_tensor(input_array)
-        return input_array.to(torch.float32).to(self._device)
+        return input_array.to(torch.float32).to(self._concrete_device)
 
     def post_process(self, predictions: list[dict[torch.Tensor]]) -> list[Box]:
         predictions = predictions[0]
@@ -99,9 +99,15 @@ class FasterRCNNModel(NNModel):
     def to_dict(self) -> dict:
         pass
 
+    @property
+    def _concrete_device(self) -> torch.device:
+        return {"cpu": torch.device("cpu"), "gpu": torch.device("cuda")}[
+            self._device
+        ]
+
     def set_device(self, device: ComputingDevice) -> None:
         self._device = device
-        self.net.to(device)
+        self.net.to(self._concrete_device)
 
 
 class TorchNetBuilder:
