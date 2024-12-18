@@ -1,11 +1,11 @@
 from patrick.core import DataSource
-from patrick.interfaces import Repository
 from patrick.repositories.local import (
     LocalFrameRepository,
     LocalMovieRepository,
     LocalNNModelRepository,
 )
 from patrick.repositories.osf import OSFMovieRepository, OSFNNModelRepository
+from patrick.repositories.repository import Repository
 
 
 def repository_factory(data_source: DataSource, name: str) -> Repository:

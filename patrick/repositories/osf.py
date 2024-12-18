@@ -10,7 +10,7 @@ import yaml
 from osfclient import OSF
 
 from patrick.core import Frame, Movie
-from patrick.interfaces import Repository
+from patrick.repositories.repository import Repository
 
 PATRICK_OSF_PROJECT_ID = "jtp4z"
 

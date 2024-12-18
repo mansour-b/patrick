@@ -8,7 +8,7 @@ import numpy as np
 import yaml
 
 from patrick.core import Frame, Movie, NNModel
-from patrick.interfaces import Repository
+from patrick.repositories.repository import Repository
 
 DATA_DIR_PATH = Path.home() / "data"
 PATRICK_DIR_PATH = DATA_DIR_PATH / "pattern_discovery"
