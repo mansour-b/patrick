@@ -25,7 +25,7 @@ class OSFRepository(Repository):
     data_source = "osf"
 
     def __init__(self, name: str):
-        super().__init(name)
+        super().__init__(name)
         self._path = Path(name)
         self._storage_dict = {
             k: v for k, v in STORAGE_DICT.items() if k.split("/")[0] == name
@@ -58,7 +58,7 @@ class OSFNNModelRepository(OSFRepository):
         yaml_file = self._storage_dict[
             str(self._path / content_path / file_name)
         ]
-        buffer = BytesIO()
+        buffer = self._open_mock_file()
         yaml_file.write_to(buffer)
         return yaml.safe_load(buffer.getvalue())
 
@@ -66,9 +66,10 @@ class OSFNNModelRepository(OSFRepository):
         net_file = self._storage_dict[
             str(self._path / content_path / "net.pth")
         ]
-        buffer = BytesIO()
+        buffer = self._open_mock_file()
         net_file.write_to(buffer)
-        return buffer.getvalue()
+        buffer.seek(0)
+        return buffer
 
 
 class OSFMovieRepository(OSFRepository):
