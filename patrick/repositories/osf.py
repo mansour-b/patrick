@@ -112,9 +112,10 @@ class OSFMovieRepository(OSFRepository):
         buffer = self._open_mock_file()
         image_array_file.write_to(buffer)
         buffer.seek(0)
-        frame.image_array = np.frombuffer(
-            buffer.read(), dtype=np.float64
-        ).reshape(frame.height, frame.width)
+        text_data = buffer.read().decode("utf-8")
+        frame.image_array = np.genfromtxt(
+            text_data.splitlines(), delimiter=" ", dtype=np.float64
+        )
 
     def _load_image_arrays(self, movie: Movie) -> None:
         for frame in movie.frames:
