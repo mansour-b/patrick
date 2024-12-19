@@ -22,6 +22,7 @@ def helper_evaluate(imgs):
         -1, len(imgs.params.areaRng), len(imgs.params.imgIds)
     )
 
+
 class CocoEvaluator:
     def __init__(self, coco_gt, iou_types):
         if not isinstance(iou_types, (list, tuple)):
