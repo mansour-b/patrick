@@ -1,8 +1,5 @@
-import datetime
 import math
 import sys
-import time
-from collections import defaultdict, deque
 
 import torch
 import torch.distributed as dist
