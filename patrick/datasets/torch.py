@@ -6,29 +6,29 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-from patrick.core import Box, Frame, Keypoint
+from patrick.core import Box, Frame, Keypoint, Movie
 from patrick.core.operations import keypoint_to_box
 
 
 class TorchDataset(Dataset):
     def __init__(
         self,
-        frame_list: list[Frame],
+        movie: Movie,
         label_map: dict[str, int],
         channel_mode: str = "channels_first",
     ):
-        self._frame_list = frame_list
-        self._label_map = label_map
-        self._channel_mode = channel_mode
+        self.movie = movie
+        self.label_map = label_map
+        self._hannel_mode = channel_mode
 
     def __getitem__(self, index: int):
-        frame = self._frame_list[index]
+        frame = self.movie.frames[index]
         image_tensor = self.prepare_image_tensor(frame)
         target = self.make_target(frame)
         return image_tensor, target
 
     def __len__(self: int):
-        return len(self._frame_list)
+        return len(self.movie.frames)
 
     def prepare_image_tensor(self, frame: Frame) -> torch.Tensor:
         image_array = self._preprocess_image_array(frame)
