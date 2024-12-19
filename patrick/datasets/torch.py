@@ -19,12 +19,12 @@ class TorchDataset(Dataset):
     ):
         self.movie = movie
         self.label_map = label_map
-        self._hannel_mode = channel_mode
+        self.channel_mode = channel_mode
 
     def __getitem__(self, index: int):
         frame = self.movie.frames[index]
         image_tensor = self.prepare_image_tensor(frame)
-        target = self.make_target(frame)
+        target = self.make_target(index, frame)
         return image_tensor, target
 
     def __len__(self: int):
@@ -36,7 +36,7 @@ class TorchDataset(Dataset):
 
     def _preprocess_image_array(self, frame: Frame) -> np.array:
         channel_axis_dict = {"channels_first": 0, "channels_last": -1}
-        channel_axis = channel_axis_dict[self._channel_mode]
+        channel_axis = channel_axis_dict[self.channel_mode]
         image_array = np.expand_dims(frame.image_array, axis=channel_axis)
         return np.repeat(image_array, repeats=3, axis=channel_axis)
 
@@ -48,7 +48,7 @@ class TorchDataset(Dataset):
         return (image_tensor - min_value) / max_range
 
     @abstractmethod
-    def make_target(self, frame: Frame) -> dict[str, torch.Tensor]:
+    def make_target(self, index: int, frame: Frame) -> dict[str, torch.Tensor]:
         pass
 
     @staticmethod
@@ -56,11 +56,10 @@ class TorchDataset(Dataset):
         return [box.xmin, box.ymin, box.xmax, box.ymax]
 
     def _make_xyxy_box_array(self, box_list: list[Box]) -> np.array:
-        return np.array([self.box_to_xyxy_format(box) for box in box_list])
+        return np.array([self._box_to_xyxy_format(box) for box in box_list])
 
     def _make_label_array(self, box_list: list[Box]) -> np.array:
-        label_map = self._label_map
-        return np.array([label_map[box.label] for box in box_list])
+        return np.array([self.label_map[box.label] for box in box_list])
 
     @staticmethod
     def _make_area_array(box_list: list[Box]) -> np.array:
@@ -69,7 +68,9 @@ class TorchDataset(Dataset):
 
 class TorchBoxDataset(TorchDataset):
 
-    def make_target(self, frame: Frame) -> dict[str, int or torch.Tensor]:
+    def make_target(
+        self, index: int, frame: Frame
+    ) -> dict[str, int or torch.Tensor]:
 
         box_list = [
             annotation
@@ -83,7 +84,7 @@ class TorchBoxDataset(TorchDataset):
         return {
             "area": torch.as_tensor(area_array),
             "boxes": torch.as_tensor(box_array, dtype=torch.float32),
-            "image_id": int(frame.name),
+            "image_id": index,
             "iscrowd": torch.zeros((len(box_list),), dtype=torch.int64),
             "labels": torch.as_tensor(label_array),
         }
@@ -94,14 +95,17 @@ class TorchKeypointDataset(TorchDataset):
         self,
         frame_list: list[Frame],
         label_map: dict[str, int],
+        channel_mode: str = "channels_first",
         box_w_padding: float = 0.5,
         box_h_padding: float = 0.5,
     ):
-        super().__init__(self, frame_list, label_map)
+        super().__init__(self, frame_list, label_map, channel_mode)
         self.box_w_padding = box_w_padding
         self.box_h_padding = box_h_padding
 
-    def make_target(self, frame: Frame) -> dict[str, int or torch.Tensor]:
+    def make_target(
+        self, index: int, frame: Frame
+    ) -> dict[str, int or torch.Tensor]:
 
         keypoint_list = [
             annotation
@@ -124,7 +128,7 @@ class TorchKeypointDataset(TorchDataset):
         return {
             "area": torch.as_tensor(area_array),
             "boxes": torch.as_tensor(box_array, dtype=torch.float32),
-            "image_id": int(frame.name),
+            "image_id": index,
             "iscrowd": torch.zeros((len(box_list),), dtype=torch.int64),
             "keypoints": torch.as_tensor(keypoint_array, dtype=torch.float32),
             "labels": torch.as_tensor(label_array),
