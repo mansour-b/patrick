@@ -15,6 +15,13 @@ from pycocotools.cocoeval import COCOeval
 from patrick.training.utils import MetricLogger, get_world_size
 
 
+def helper_evaluate(imgs):
+    with redirect_stdout(io.StringIO()):
+        imgs.evaluate()
+    return imgs.params.imgIds, np.asarray(imgs.evalImgs).reshape(
+        -1, len(imgs.params.areaRng), len(imgs.params.imgIds)
+    )
+
 class CocoEvaluator:
     def __init__(self, coco_gt, iou_types):
         if not isinstance(iou_types, (list, tuple)):
@@ -53,7 +60,7 @@ class CocoEvaluator:
 
             coco_eval.cocoDt = coco_dt
             coco_eval.params.imgIds = list(img_ids)
-            img_ids, eval_imgs = evaluate(coco_eval)
+            img_ids, eval_imgs = helper_evaluate(coco_eval)
 
             self.eval_imgs[iou_type].append(eval_imgs)
 
