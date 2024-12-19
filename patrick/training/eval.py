@@ -6,6 +6,7 @@ from contextlib import redirect_stdout
 import numpy as np
 import pycocotools.mask as mask_util
 import torch
+import torch.distributed as dist
 import torchvision
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
