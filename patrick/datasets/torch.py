@@ -16,10 +16,12 @@ class TorchDataset(Dataset):
         movie: Movie,
         label_map: dict[str, int],
         channel_mode: str = "channels_first",
+        dtype: torch.dtype = torch.float32,
     ):
         self.movie = movie
         self.label_map = label_map
         self.channel_mode = channel_mode
+        self.dtype = dtype
 
     def __getitem__(self, index: int):
         frame = self.movie.frames[index]
@@ -32,7 +34,8 @@ class TorchDataset(Dataset):
 
     def prepare_image_tensor(self, frame: Frame) -> torch.Tensor:
         image_array = self._preprocess_image_array(frame)
-        return self._rescale_histogram(torch.from_numpy(image_array))
+        image_tensor = self._rescale_histogram(torch.from_numpy(image_array))
+        return image_tensor.to(self.dtype)
 
     def _preprocess_image_array(self, frame: Frame) -> np.array:
         channel_axis_dict = {"channels_first": 0, "channels_last": -1}
