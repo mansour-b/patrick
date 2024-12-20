@@ -1,5 +1,6 @@
 from patrick.core.entities.annotation import Annotation, Box, Keypoint, Track
 from patrick.core.entities.array import Array
+from patrick.core.entities.dataset import Dataset
 from patrick.core.entities.detection import CDModel, Model, NeuralNet, NNModel
 from patrick.core.entities.frame import Frame
 from patrick.core.entities.movie import Movie
@@ -11,6 +12,7 @@ __all__ = [
     "Box",
     "CDModel",
     "ComputingDevice",
+    "Dataset",
     "DataSource",
     "Frame",
     "Framework",
