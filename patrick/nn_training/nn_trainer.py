@@ -3,15 +3,22 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from patrick.core import Dataset, NeuralNet
+from patrick.core import ComputingDevice, Dataset, NeuralNet
 
 
 class NNTrainer(ABC):
     def __init__(
-        self, net: NeuralNet, dataset: Dataset, parameters: dict[str, Any]
+        self,
+        net: NeuralNet,
+        dataset: Dataset,
+        val_dataset: Dataset,
+        parameters: dict[str, Any],
+        device: ComputingDevice,
     ):
         self.net = net
         self.dataset = dataset
+        self.val_dataset = val_dataset
+        self.device = device
 
         (
             self.optimiser_params,
