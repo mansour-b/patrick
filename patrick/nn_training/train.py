@@ -4,7 +4,11 @@ import sys
 import torch
 import torch.distributed as dist
 
-from patrick.training.utils import MetricLogger, SmoothedValue, get_world_size
+from patrick.nn_training.utils import (
+    MetricLogger,
+    SmoothedValue,
+    get_world_size,
+)
 
 
 def reduce_dict(input_dict, average=True):
