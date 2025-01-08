@@ -61,6 +61,10 @@ class ConvDict:
     """Abstract class to model a convolutional dictionary."""
 
 
+class ActivationVector:
+    """Abstract class to model an activation vector in CDL."""
+
+
 class NNModel(Model):
     """Abstract class representing neural-network-based models."""
 
