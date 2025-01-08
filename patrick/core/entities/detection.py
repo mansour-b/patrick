@@ -57,6 +57,10 @@ class NeuralNet:
         """
 
 
+class ConvDict:
+    """Abstract class to model a convolutional dictionary."""
+
+
 class NNModel(Model):
     """Abstract class representing neural-network-based models."""
 

@@ -4,6 +4,7 @@ from patrick.core.entities.dataset import Dataset
 from patrick.core.entities.detection import CDModel, Model, NeuralNet, NNModel
 from patrick.core.entities.frame import Frame
 from patrick.core.entities.movie import Movie
+from patrick.core.entities.training import Trainer
 from patrick.core.value_objects import ComputingDevice, DataSource, Framework
 
 __all__ = [
@@ -12,8 +13,8 @@ __all__ = [
     "Box",
     "CDModel",
     "ComputingDevice",
-    "Dataset",
     "DataSource",
+    "Dataset",
     "Frame",
     "Framework",
     "Keypoint",
@@ -22,4 +23,5 @@ __all__ = [
     "NNModel",
     "NeuralNet",
     "Track",
+    "Trainer",
 ]
