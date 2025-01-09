@@ -21,6 +21,14 @@ class ConvolutionalSparseCoder(ABC):
         pass
 
 
+class CoordinateDescentCSC(ConvolutionalSparseCoder):
+    pass
+
+
+class GradientDescentCSC(ConvolutionalSparseCoder):
+    """CSC with FISTA Algorithm."""
+
+
 class DictionaryUpdater(ABC):
     @abstractmethod
     def __call__(
@@ -29,6 +37,9 @@ class DictionaryUpdater(ABC):
         conv_dict: ConvDict,
         activation_vector: ActivationVector,
     ) -> ConvDict:
+        pass
+
+    def determine_step_size(self):
         pass
 
 
