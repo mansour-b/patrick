@@ -15,6 +15,10 @@ description = "Pattern Discovery Kit"
 readme = "README.md"
 
 dependencies = [
+  "imageio",
+  "ipykernel",
+  "matplotlib",
+  "moviepy<2",
   "numpy",
   "osfclient",
   "PyYAML",
