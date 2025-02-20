@@ -15,7 +15,7 @@ description = "Pattern Discovery Kit"
 readme = "README.md"
 
 dependencies = [
-  "numpy<2",
+  "numpy",
   "osfclient",
   "PyYAML",
   "torch",
