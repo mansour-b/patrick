@@ -19,7 +19,7 @@ dependencies = [
   "ipykernel",
   "matplotlib",
   "moviepy<2",
-  "numpy<2",
+  "numpy",
   "osfclient",
   "PyYAML",
   "torch",
