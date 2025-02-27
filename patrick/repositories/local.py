@@ -24,7 +24,6 @@ class LocalRepository(Repository):
 
 
 class LocalFrameRepository(LocalRepository):
-
     def __init__(self, name: str):
         self.name = name
         self._directory_path = {
@@ -82,7 +81,6 @@ class LocalFrameRepository(LocalRepository):
 
 class LocalNNModelRepository(LocalRepository):
     def read(self, content_path: str or Path) -> dict[str, dict or BytesIO]:
-
         return {
             "label_map": self._load_label_map(content_path),
             "model_parameters": self._load_model_parameters(content_path),
@@ -115,7 +113,6 @@ class LocalNNModelRepository(LocalRepository):
 
 
 class LocalMovieRepository(LocalRepository):
-
     def __init__(self, name: str):
         self.name = name
         self._directory_path = {
